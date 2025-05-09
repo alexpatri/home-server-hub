@@ -1,6 +1,6 @@
 module home-server-hub
 
-go 1.23.4
+go 1.23
 
 require (
 	github.com/docker/docker v28.1.1+incompatible
