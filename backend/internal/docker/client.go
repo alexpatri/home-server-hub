@@ -28,8 +28,8 @@ type ContainerInfo struct {
 // Port representa uma porta exposta por um container
 type Port struct {
 	HostIP        string
-	HostPort      string
-	ContainerPort string
+	HostPort      uint16
+	ContainerPort uint16
 	Protocol      string
 }
 
@@ -74,8 +74,8 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 		for _, port := range container.Ports {
 			ports = append(ports, Port{
 				HostIP:        port.IP,
-				HostPort:      string(port.PublicPort),
-				ContainerPort: string(port.PrivatePort),
+				HostPort:      port.PublicPort,
+				ContainerPort: port.PrivatePort,
 				Protocol:      port.Type,
 			})
 		}

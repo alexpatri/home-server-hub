@@ -42,7 +42,7 @@ type DiscoveredApplication struct {
 	Name      string   `json:"name"`
 	Container string   `json:"container"`
 	IP        string   `json:"ip"`
-	Port      string   `json:"port"`
+	Port      uint16   `json:"port"`
 	Tags      []string `json:"tags"`
 	Exists    bool     `json:"exists"`
 }

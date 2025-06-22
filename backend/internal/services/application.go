@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 
 	"home-server-hub/internal/docker"
@@ -51,10 +52,12 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 		exists := existingContainers[container.ID]
 
 		// Determinar porta principal
-		port := ""
+		var port uint16
 		if len(container.Ports) > 0 {
 			port = container.Ports[0].HostPort
 		}
+
+		fmt.Println(container.Ports)
 
 		// Criar tags baseadas no nome e imagem
 		tags := generateTags(container.Name, container.Image)
@@ -76,7 +79,7 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 func isSystemContainer(name, image string) bool {
 	// Lista de nomes/imagens a serem ignorados
 	systemNames := []string{
-		"mongo", "mongodb", "postgres", "mysql", "mariadb", 
+		"mongo", "mongodb", "postgres", "mysql", "mariadb",
 		"influxdb", "prometheus", "grafana", "traefik", "nginx",
 		"docker-proxy", "portainer", "watchtower", "home-server-hub",
 	}
