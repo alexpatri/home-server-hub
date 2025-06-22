@@ -1,0 +1,87 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Documentação da API Home Server Hub",
+        "title": "Home Server Hub API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/applications/discover": {
+            "post": {
+                "description": "Busca por containers Docker em execução e retorna como aplicações potenciais",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Descobre aplicações Docker rodando no servidor",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DiscoverResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.DiscoverResult": {
+            "type": "object",
+            "properties": {
+                "discovered": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DiscoveredApplication"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DiscoveredApplication": {
+            "type": "object",
+            "properties": {
+                "container": {
+                    "type": "string"
+                },
+                "exists": {
+                    "type": "boolean"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

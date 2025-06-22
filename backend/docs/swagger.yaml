@@ -1,0 +1,58 @@
+basePath: /api/v1
+definitions:
+  models.DiscoverResult:
+    properties:
+      discovered:
+        items:
+          $ref: '#/definitions/models.DiscoveredApplication'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.DiscoveredApplication:
+    properties:
+      container:
+        type: string
+      exists:
+        type: boolean
+      ip:
+        type: string
+      name:
+        type: string
+      port:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Documentação da API Home Server Hub
+  title: Home Server Hub API
+  version: "1.0"
+paths:
+  /applications/discover:
+    post:
+      consumes:
+      - application/json
+      description: Busca por containers Docker em execução e retorna como aplicações
+        potenciais
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DiscoverResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Descobre aplicações Docker rodando no servidor
+      tags:
+      - applications
+swagger: "2.0"
