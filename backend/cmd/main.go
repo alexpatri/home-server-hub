@@ -11,6 +11,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/joho/godotenv"
 
 	"home-server-hub/internal/api"
 	"home-server-hub/internal/config"
@@ -19,12 +20,17 @@ import (
 
 
 // @title           Home Server Hub API
-// @version         1.0
+// @version         0.1
 // @description     Documentação da API Home Server Hub
 // @host            localhost:8080
 // @BasePath        /api/v1
 func main() {
 	// Carregar configurações
+  	err := godotenv.Load()
+  	if err != nil {
+    	log.Fatal("Error loading .env file")
+  	}
+
 	cfg := config.LoadConfig()
 
 	// Conectar ao MongoDB
