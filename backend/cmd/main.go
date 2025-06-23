@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,15 +10,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/joho/godotenv"
 
 	"home-server-hub/internal/api"
 	"home-server-hub/internal/config"
 	"home-server-hub/internal/docker"
 )
-
 
 // @title           Home Server Hub API
 // @version         0.1
@@ -25,12 +25,18 @@ import (
 // @host            localhost:8080
 // @BasePath        /api/v1
 func main() {
-	// Carregar configurações
-  	err := godotenv.Load()
-  	if err != nil {
-    	log.Fatal("Error loading .env file")
-  	}
+	// Flag para carregar .env
+	useDotEnv := flag.Bool("dotenv", false, "Carregar variáveis do arquivo .env")
+	flag.Parse()
 
+	// Se a flag for true, carrega o .env
+	if *useDotEnv {
+		if err := godotenv.Load(); err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+
+	// Carregar configurações
 	cfg := config.LoadConfig()
 
 	// Conectar ao MongoDB
