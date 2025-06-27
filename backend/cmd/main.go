@@ -35,7 +35,7 @@ func main() {
 	// Carregar configurações
 	cfg := config.LoadConfig()
 
-	// Conectar ao MongoDB
+	// Conectar ao Banco de Dados
 	db, err := database.Connect(cfg.Database)
 	if err != nil {
 		log.Fatalf("Erro ao conectar ao banco de dados: %v", err)

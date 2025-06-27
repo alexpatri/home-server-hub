@@ -11,7 +11,7 @@ import (
 	"home-server-hub/internal/config"
 )
 
-// connectDB estabelece conexão com o MongoDB
+// Connect estabelece conexão com o Banco
 func Connect(dbConfig config.DatabaseConfig) (*mongo.Database, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -32,7 +32,7 @@ func Connect(dbConfig config.DatabaseConfig) (*mongo.Database, error) {
 	return client.Database(dbConfig.DatabaseName), nil
 }
 
-// disconnectDB encerra a conexão com o MongoDB
+// Disconnect encerra a conexão com o Banco
 func Disconnect(db *mongo.Database) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
