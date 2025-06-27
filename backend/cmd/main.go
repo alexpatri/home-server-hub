@@ -1,22 +1,18 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-
 	"home-server-hub/internal/api"
 	"home-server-hub/internal/config"
 	"home-server-hub/internal/docker"
+
+	"home-server-hub/internal/database"
 )
 
 // @title           Home Server Hub API
@@ -40,11 +36,12 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Conectar ao MongoDB
-	db, err := connectDB(cfg.Database)
+	db, err := database.Connect(cfg.Database)
 	if err != nil {
 		log.Fatalf("Erro ao conectar ao banco de dados: %v", err)
 	}
-	defer disconnectDB(db)
+
+	defer database.Disconnect(db)
 
 	// Inicializar cliente Docker
 	dockerCli, err := docker.NewClient(cfg.Docker.Host)
@@ -75,36 +72,4 @@ func main() {
 	// Aguardar sinal para encerrar
 	<-quit
 	log.Println("Encerrando servidor...")
-}
-
-// connectDB estabelece conexão com o MongoDB
-func connectDB(dbConfig config.DatabaseConfig) (*mongo.Database, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	clientOptions := options.Client().ApplyURI(dbConfig.URI)
-	client, err := mongo.Connect(ctx, clientOptions)
-	if err != nil {
-		return nil, err
-	}
-
-	// Verificar conexão
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("Conectado ao MongoDB!")
-	return client.Database(dbConfig.DatabaseName), nil
-}
-
-// disconnectDB encerra a conexão com o MongoDB
-func disconnectDB(db *mongo.Database) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := db.Client().Disconnect(ctx); err != nil {
-		log.Fatalf("Erro ao desconectar do MongoDB: %v", err)
-	}
-	fmt.Println("Desconectado do MongoDB")
 }
