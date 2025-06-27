@@ -8,7 +8,7 @@ services:
       MONGODB_URI: mongodb://mongodb:27017
       DOCKER_HOST: unix:///var/run/docker.sock
     ports:
-      - "8080:8080"
+      - "8000:8000"
     depends_on:
       - mongodb
     volumes:

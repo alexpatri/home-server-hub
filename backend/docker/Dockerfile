@@ -28,7 +28,7 @@ ENV MONGODB_URI=mongodb://localhost:27017
 ENV MONGODB_DATABASE=home_server_hub
 ENV DOCKER_HOST=unix:///var/run/docker.sock
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["./main"]
 
