@@ -82,7 +82,7 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 			})
 		}
 
-		hostIP, err := network.GetLocalIP()
+		hostIP, err := network.GetHostIPFromContainer()
 		if err != nil {
 			hostIP = "127.0.0.1"
 		}

@@ -5,6 +5,7 @@ services:
       dockerfile: backend/docker/Dockerfile
     container_name: home_server_backend
     environment:
+      SERVER_PORT: 8000
       MONGODB_URI: mongodb://mongodb:27017
       DOCKER_HOST: unix:///var/run/docker.sock
     ports:
