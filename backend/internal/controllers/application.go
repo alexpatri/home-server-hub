@@ -23,8 +23,8 @@ func NewApplicationController(appService *services.ApplicationService) *Applicat
 // RegisterRoutes registra as rotas do controller no router do Fiber
 func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 	apps := router.Group("/applications")
-	apps.Post("/discover", c.discoverApplications)
-	
+	apps.Get("/discover", c.discoverApplications)
+
 	// Outros endpoints serão implementados posteriormente
 	// apps.Get("/", c.getAllApplications)
 	// apps.Post("/", c.createApplication)
