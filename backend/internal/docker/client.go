@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -46,6 +47,48 @@ func NewClient(host string) (*Client, error) {
 	}
 
 	return &Client{client: cli}, nil
+}
+
+func (c *Client) GetContainer(containerID string) (*ContainerInfo, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	inspected, err := c.client.ContainerInspect(ctx, containerID)
+	if err != nil {
+		return nil, err
+	}
+
+	ip, err := network.GetLocalIP()
+	if err != nil {
+		ip = "127.0.0.1"
+	}
+
+	var ports []Port
+	for port, bindings := range inspected.NetworkSettings.Ports {
+		for _, binding := range bindings {
+			hostPort := uint16(0)
+			fmt.Sscanf(binding.HostPort, "%d", &hostPort)
+			ports = append(ports, Port{
+				HostIP:        binding.HostIP,
+				HostPort:      hostPort,
+				ContainerPort: uint16(port.Int()),
+				Protocol:      port.Proto(),
+			})
+		}
+	}
+
+	name := strings.TrimPrefix(inspected.Name, "/")
+
+	info := &ContainerInfo{
+		ID:    inspected.ID,
+		Name:  name,
+		Image: inspected.Config.Image,
+		Ports: ports,
+		State: inspected.State.Status,
+		IP:    ip,
+	}
+
+	return info, nil
 }
 
 // ListContainers lista todos os containers disponíveis
