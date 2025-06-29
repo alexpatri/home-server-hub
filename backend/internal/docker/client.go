@@ -64,6 +64,11 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 		return nil, err
 	}
 
+	hostIP, err := network.GetLocalIP()
+	if err != nil {
+		hostIP = "127.0.0.1"
+	}
+
 	var containers []ContainerInfo
 	for _, container := range containerList {
 		name := ""
@@ -80,11 +85,6 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 				ContainerPort: port.PrivatePort,
 				Protocol:      port.Type,
 			})
-		}
-
-		hostIP, err := network.GetHostIPFromContainer()
-		if err != nil {
-			hostIP = "127.0.0.1"
 		}
 
 		containers = append(containers, ContainerInfo{

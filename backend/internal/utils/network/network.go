@@ -5,22 +5,6 @@ import (
 	"net"
 )
 
-// GetHostIPFromContainer tenta resolver o IP do host a partir de dentro do container
-func GetHostIPFromContainer() (string, error) {
-	hostIPs, err := net.LookupIP("host.docker.internal")
-	if err != nil {
-		return "", err
-	}
-
-	for _, ip := range hostIPs {
-		if ipv4 := ip.To4(); ipv4 != nil {
-			return ipv4.String(), nil
-		}
-	}
-
-	return "", nil
-}
-
 // GetLocalIP retorna o IP local do host (ignora interfaces loopback)
 func GetLocalIP() (string, error) {
 	addrs, err := net.InterfaceAddrs()
