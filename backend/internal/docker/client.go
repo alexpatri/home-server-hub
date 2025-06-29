@@ -8,6 +8,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
+
+	"home-server-hub/internal/utils/network"
 )
 
 // Client encapsula a API do Docker
@@ -80,19 +82,9 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 			})
 		}
 
-		// Obter detalhes do container para IP
-		containerInfo, err := c.client.ContainerInspect(ctx, container.ID)
+		hostIP, err := network.GetLocalIP()
 		if err != nil {
-			continue
-		}
-
-		ip := ""
-		// Tenta obter o IP do container
-		if containerInfo.NetworkSettings != nil && len(containerInfo.NetworkSettings.Networks) > 0 {
-			for _, network := range containerInfo.NetworkSettings.Networks {
-				ip = network.IPAddress
-				break
-			}
+			hostIP = "127.0.0.1"
 		}
 
 		containers = append(containers, ContainerInfo{
@@ -101,7 +93,7 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 			Image: container.Image,
 			Ports: ports,
 			State: container.State,
-			IP:    ip,
+			IP:    hostIP,
 		})
 	}
 
