@@ -74,14 +74,20 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var input models.ApplicationInput
-	if err := ctx.BodyParser(&input); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "JSON inválido: " + err.Error(),
-		})
+	var input *models.ApplicationInput
+
+	if ctx.Request().Header.ContentLength() > 0 {
+		var parsed models.ApplicationInput
+		if err := ctx.BodyParser(&parsed); err != nil {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+				"error": "JSON inválido: " + err.Error(),
+			})
+		}
+
+		input = &parsed
 	}
 
-	application, err := c.appService.CreateApplication(containerID, &input)
+	application, err := c.appService.CreateApplication(containerID, input)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao criar aplicação: " + err.Error(),
