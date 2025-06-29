@@ -4,11 +4,69 @@
         "description": "Documentação da API Home Server Hub",
         "title": "Home Server Hub API",
         "contact": {},
-        "version": "1.0"
+        "version": "0.1"
     },
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/applications": {
+            "post": {
+                "description": "Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Cria uma nova aplicação",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do container Docker",
+                        "name": "containerID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados opcionais para sobrescrever valores padrão",
+                        "name": "application",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ApplicationInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Application"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/applications/discover": {
             "post": {
                 "description": "Busca por containers Docker em execução e retorna como aplicações potenciais",
@@ -43,6 +101,62 @@
         }
     },
     "definitions": {
+        "models.Application": {
+            "type": "object",
+            "properties": {
+                "container": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/models.Image"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Status não é armazenado, é calculado em tempo real",
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ApplicationInput": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "models.DiscoverResult": {
             "type": "object",
             "properties": {
@@ -73,13 +187,36 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "tags": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "models.Image": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "width": {
+                    "type": "integer"
                 }
             }
         }

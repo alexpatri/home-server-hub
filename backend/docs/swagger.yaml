@@ -1,5 +1,42 @@
 basePath: /api/v1
 definitions:
+  models.Application:
+    properties:
+      container:
+        type: string
+      id:
+        type: string
+      image:
+        $ref: '#/definitions/models.Image'
+      ip:
+        type: string
+      name:
+        type: string
+      port:
+        type: integer
+      status:
+        description: Status não é armazenado, é calculado em tempo real
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      url:
+        type: string
+    type: object
+  models.ApplicationInput:
+    properties:
+      name:
+        type: string
+      port:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      url:
+        type: string
+    type: object
   models.DiscoverResult:
     properties:
       discovered:
@@ -20,19 +57,73 @@ definitions:
       name:
         type: string
       port:
-        type: string
+        type: integer
       tags:
         items:
           type: string
         type: array
+    type: object
+  models.Image:
+    properties:
+      data:
+        items:
+          type: integer
+        type: array
+      height:
+        type: integer
+      name:
+        type: string
+      size:
+        type: integer
+      width:
+        type: integer
     type: object
 host: localhost:8080
 info:
   contact: {}
   description: Documentação da API Home Server Hub
   title: Home Server Hub API
-  version: "1.0"
+  version: "0.1"
 paths:
+  /applications:
+    post:
+      consumes:
+      - application/json
+      description: Cria e armazena uma aplicação com base no ID de um container Docker
+        e dados opcionais enviados
+      parameters:
+      - description: ID do container Docker
+        in: query
+        name: containerID
+        required: true
+        type: string
+      - description: Dados opcionais para sobrescrever valores padrão
+        in: body
+        name: application
+        schema:
+          $ref: '#/definitions/models.ApplicationInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Application'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cria uma nova aplicação
+      tags:
+      - applications
   /applications/discover:
     post:
       consumes:

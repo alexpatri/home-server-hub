@@ -61,7 +61,7 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param containerID query string true "ID do container Docker"
-// @Param application body services.ApplicationInput false "Dados opcionais para sobrescrever valores padrão"
+// @Param application body models.ApplicationInput false "Dados opcionais para sobrescrever valores padrão"
 // @Success 201 {object} models.Application
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
