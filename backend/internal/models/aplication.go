@@ -12,9 +12,16 @@ type Application struct {
 	Image     *Image             `json:"image" bson:"image"`
 	Container string             `json:"container" bson:"container"`
 	IP        string             `json:"ip" bson:"ip"`
-	Port      string             `json:"port" bson:"port"`
+	Port      uint16             `json:"port" bson:"port"`
 	URL       string             `json:"url" bson:"url"`
 	Status    string             `json:"status" bson:"-"` // Status não é armazenado, é calculado em tempo real
+}
+
+type ApplicationInput struct {
+	Name *string  `json:"name,omitempty"`
+	Port *uint16  `json:"port,omitempty"`
+	URL  *string  `json:"url,omitempty"`
+	Tags []string `json:"tags,omitempty"`
 }
 
 // Image representa a imagem/ícone associado à aplicação

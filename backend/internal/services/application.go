@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"strings"
 
 	"home-server-hub/internal/docker"
@@ -57,8 +56,6 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 			port = container.Ports[0].HostPort
 		}
 
-		fmt.Println(container.Ports)
-
 		// Criar tags baseadas no nome e imagem
 		tags := generateTags(container.Name, container.Image)
 
@@ -68,11 +65,41 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 			IP:        container.IP,
 			Port:      port,
 			Tags:      tags,
-			Exists:    exists,
+			Exists:    exists, //TODO: nome do atributo mais autoexplicativo
 		})
 	}
 
 	return result, nil
+}
+
+func (s *ApplicationService) CreateApplication(containerID string, input *models.ApplicationInput) (*models.Application, error) {
+	container, err := s.dockerCli.GetContainer(containerID)
+	if err != nil {
+		return nil, err
+	}
+
+	var defaultPort uint16
+	if len(container.Ports) > 0 {
+		defaultPort = container.Ports[0].HostPort
+	}
+
+	defaultName := formatContainerName(container.Name)
+
+	application := &models.Application{
+		Name:      deref(input.Name, defaultName),
+		Container: container.ID,
+		Port:      deref(input.Port, defaultPort),
+		IP:        container.IP,
+		Image:     &models.Image{Name: container.Image},
+		URL:       deref(input.URL, ""),
+		Tags:      input.Tags,
+	}
+
+	if err := s.repository.Create(application); err != nil {
+		return nil, err
+	}
+
+	return application, nil
 }
 
 // isSystemContainer verifica se o container é um container de sistema
@@ -144,4 +171,11 @@ func generateTags(name, image string) []string {
 	}
 
 	return result
+}
+
+func deref[T any](ptr *T, fallback T) T {
+	if ptr == nil {
+		return fallback
+	}
+	return *ptr
 }
