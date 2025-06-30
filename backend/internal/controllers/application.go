@@ -78,7 +78,7 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 
 	var input models.ApplicationInput
 
-	if err := ctx.BodyParser(input); err != nil {
+	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error": "JSON inválido: " + err.Error(),
 		})
