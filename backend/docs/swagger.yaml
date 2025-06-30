@@ -78,6 +78,15 @@ definitions:
       width:
         type: integer
     type: object
+  models.ListApplicationsResult:
+    properties:
+      application:
+        items:
+          $ref: '#/definitions/models.Application'
+        type: array
+      total:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -86,6 +95,24 @@ info:
   version: "0.1"
 paths:
   /applications:
+    get:
+      description: Retorna todas as aplicações já criadas e armazenadas no sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListApplicationsResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista aplicações
+      tags:
+      - applications
     post:
       consumes:
       - application/json
@@ -125,7 +152,7 @@ paths:
       tags:
       - applications
   /applications/discover:
-    post:
+    get:
       consumes:
       - application/json
       description: Busca por containers Docker em execução e retorna como aplicações

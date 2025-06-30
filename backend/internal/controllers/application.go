@@ -37,14 +37,14 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 }
 
 // discoverApplications descobre aplicações Docker
-// @Summary Descobre aplicações Docker rodando no servidor
-// @Description Busca por containers Docker em execução e retorna como aplicações potenciais
-// @Tags applications
-// @Accept json
-// @Produce json
-// @Success 200 {object} models.DiscoverResult
-// @Failure 500 {object} map[string]string
-// @Router /applications/discover [get]
+//	@Summary		Descobre aplicações Docker rodando no servidor
+//	@Description	Busca por containers Docker em execução e retorna como aplicações potenciais
+//	@Tags			applications
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.DiscoverResult
+//	@Failure		500	{object}	map[string]string
+//	@Router			/applications/discover [get]
 func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 	result, err := c.appService.DiscoverApplications()
 	if err != nil {
@@ -57,17 +57,17 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 }
 
 // createApplication cria uma nova aplicação a partir de um container Docker
-// @Summary Cria uma nova aplicação
-// @Description Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados
-// @Tags applications
-// @Accept json
-// @Produce json
-// @Param containerID query string true "ID do container Docker"
-// @Param application body models.ApplicationInput false "Dados opcionais para sobrescrever valores padrão"
-// @Success 201 {object} models.Application
-// @Failure 400 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /applications [post]
+//	@Summary		Cria uma nova aplicação
+//	@Description	Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados
+//	@Tags			applications
+//	@Accept			json
+//	@Produce		json
+//	@Param			containerID	query		string					true	"ID do container Docker"
+//	@Param			application	body		models.ApplicationInput	false	"Dados opcionais para sobrescrever valores padrão"
+//	@Success		201			{object}	models.Application
+//	@Failure		400			{object}	map[string]string
+//	@Failure		500			{object}	map[string]string
+//	@Router			/applications [post]
 func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 	containerID := ctx.Query("container_id")
 	if containerID == "" {
@@ -95,13 +95,13 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 }
 
 // listApplications lista todas as aplicações cadastradas
-// @Summary Lista aplicações
-// @Description Retorna todas as aplicações já criadas e armazenadas no sistema
-// @Tags applications
-// @Produce json
-// @Success 200 {object} listApplicationsResponse
-// @Failure 500 {object} map[string]string
-// @Router /applications [get]
+//	@Summary		Lista aplicações
+//	@Description	Retorna todas as aplicações já criadas e armazenadas no sistema
+//	@Tags			applications
+//	@Produce		json
+//	@Success		200	{object}	models.ListApplicationsResult
+//	@Failure		500	{object}	map[string]string
+//	@Router			/applications [get]
 func (c *ApplicationController) listApplications(ctx *fiber.Ctx) error {
 	result, err := c.appService.ListApplications()
 	if err != nil {

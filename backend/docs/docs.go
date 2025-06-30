@@ -16,6 +16,33 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/applications": {
+            "get": {
+                "description": "Retorna todas as aplicações já criadas e armazenadas no sistema",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Lista aplicações",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ListApplicationsResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados",
                 "consumes": [
@@ -74,7 +101,7 @@ const docTemplate = `{
             }
         },
         "/applications/discover": {
-            "post": {
+            "get": {
                 "description": "Busca por containers Docker em execução e retorna como aplicações potenciais",
                 "consumes": [
                     "application/json"
@@ -222,6 +249,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ListApplicationsResult": {
+            "type": "object",
+            "properties": {
+                "application": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Application"
+                    }
+                },
+                "total": {
                     "type": "integer"
                 }
             }
