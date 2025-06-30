@@ -59,3 +59,8 @@ type DiscoverResult struct {
 	Discovered []DiscoveredApplication `json:"discovered"`
 	Total      int                     `json:"total"`
 }
+
+type ListApplicationsResult struct {
+	Applications []Application `json:"application"`
+	Total        int           `json:"total"`
+}

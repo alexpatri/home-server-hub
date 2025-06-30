@@ -102,6 +102,18 @@ func (s *ApplicationService) CreateApplication(containerID string, input *models
 	return application, nil
 }
 
+func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult, error) {
+	applicatrions, err := s.repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ListApplicationsResult{
+		Applications: applicatrions,
+		Total:        len(applicatrions),
+	}, nil
+}
+
 // isSystemContainer verifica se o container é um container de sistema
 func isSystemContainer(name, image string) bool {
 	// Lista de nomes/imagens a serem ignorados

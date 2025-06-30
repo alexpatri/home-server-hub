@@ -24,11 +24,13 @@ func NewApplicationController(appService *services.ApplicationService) *Applicat
 // RegisterRoutes registra as rotas do controller no router do Fiber
 func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 	apps := router.Group("/applications")
+
 	apps.Get("/discover", c.discoverApplications)
+	apps.Get("/", c.listApplications)
+
 	apps.Post("/", c.createApplication)
 
 	// Outros endpoints serão implementados posteriormente
-	// apps.Get("/", c.getAllApplications)
 	// apps.Get("/:id", c.getApplication)
 	// apps.Put("/:id", c.updateApplication)
 	// apps.Delete("/:id", c.deleteApplication)
@@ -42,7 +44,7 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 // @Produce json
 // @Success 200 {object} models.DiscoverResult
 // @Failure 500 {object} map[string]string
-// @Router /applications/discover [post]
+// @Router /applications/discover [get]
 func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 	result, err := c.appService.DiscoverApplications()
 	if err != nil {
@@ -90,4 +92,23 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(application)
+}
+
+// listApplications lista todas as aplicações cadastradas
+// @Summary Lista aplicações
+// @Description Retorna todas as aplicações já criadas e armazenadas no sistema
+// @Tags applications
+// @Produce json
+// @Success 200 {object} listApplicationsResponse
+// @Failure 500 {object} map[string]string
+// @Router /applications [get]
+func (c *ApplicationController) listApplications(ctx *fiber.Ctx) error {
+	result, err := c.appService.ListApplications()
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Erro ao listar aplicações: " + err.Error(),
+		})
+	}
+
+	return ctx.Status(http.StatusOK).JSON(result)
 }
