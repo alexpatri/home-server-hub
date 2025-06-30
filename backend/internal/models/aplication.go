@@ -61,6 +61,6 @@ type DiscoverResult struct {
 }
 
 type ListApplicationsResult struct {
-	Applications []Application `json:"application"`
+	Applications []Application `json:"applications"`
 	Total        int           `json:"total"`
 }

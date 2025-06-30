@@ -90,7 +90,6 @@ func (s *ApplicationService) CreateApplication(containerID string, input *models
 		Container: container.ID,
 		Port:      deref(input.Port, defaultPort),
 		IP:        container.IP,
-		Image:     &models.Image{Name: container.Image},
 		URL:       deref(input.URL, ""),
 		Tags:      input.Tags,
 	}
