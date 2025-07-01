@@ -107,6 +107,10 @@ func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult,
 		return nil, err
 	}
 
+	for _, app := range applicatrions {
+		app.Status, _ = s.dockerCli.GetContainerStatus(app.Container)
+	}
+
 	return &models.ListApplicationsResult{
 		Applications: applicatrions,
 		Total:        len(applicatrions),
