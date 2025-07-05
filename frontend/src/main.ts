@@ -7,9 +7,15 @@ import App from './App.vue'
 import router from './router'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCloud } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCloud,
+  faMagnifyingGlass,
+  faSearch,
+  faTimes,
+  faX,
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faCloud)
+library.add(faCloud, faMagnifyingGlass, faSearch, faTimes, faX)
 
 const app = createApp(App)
 

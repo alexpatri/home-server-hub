@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col items-start text-dark dark:text-light gap-0.5">
-    <h1 class="text-5xl sm:text-6xl font-bold leading-none">{{ time }}</h1>
+  <div class="flex flex-col items-start text-dark gap-0.5">
+    <h1 class="text-5xl font-bold leading-none">{{ time }}</h1>
 
     <div v-if="weather" class="flex items-center space-x-2 mt-2 text-sm sm:text-lg">
       <font-awesome-icon :icon="['fas', 'cloud']" />
