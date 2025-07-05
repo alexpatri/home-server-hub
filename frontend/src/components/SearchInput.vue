@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-2xl">
+  <div class="w-full max-w-lg lg:max-w-2xl">
     <div class="relative">
       <div
         class="flex items-center w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:shadow-md focus-within:border-primary"

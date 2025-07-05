@@ -1,11 +1,11 @@
 <template>
   <div class="h-screen w-screen bg-light flex flex-col items-center gap-5">
-    <header class="w-full bg-light py-3 px-10 flex items-center justify-between shadow-md">
+    <header class="w-full bg-light py-3 px-3 sm:px-10 flex items-center justify-between shadow-md">
       <Clock />
-      <SearchInput ref="searchRef" v-model="searchValue" placeholder="Buscar na Internet" />
+      <SearchInput class="hidden md:inline" ref="searchRef" v-model="searchValue" placeholder="Buscar na Internet" />
     </header>
-    <main class="px-10 w-full h-full"></main>
-    <footer class="bg-dark px-10 h-16 w-full"></footer>
+    <main class="px-3 sm:px-10 w-full h-full"></main>
+    <DefaultFooter />
   </div>
 </template>
 
@@ -14,6 +14,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 import Clock from '@/components/Clock.vue'
 import SearchInput from '@/components/SearchInput.vue'
+import DefaultFooter from '@/components/DefaultFooter.vue'
 
 const searchRef = ref()
 const searchValue = ref<string>('')

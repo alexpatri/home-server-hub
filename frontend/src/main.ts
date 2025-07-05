@@ -13,9 +13,10 @@ import {
   faSearch,
   faTimes,
   faX,
+  faGear,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faCloud, faMagnifyingGlass, faSearch, faTimes, faX)
+library.add(faCloud, faMagnifyingGlass, faSearch, faTimes, faX, faGear)
 
 const app = createApp(App)
 
