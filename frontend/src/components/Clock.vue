@@ -26,7 +26,6 @@ function updateTime() {
 
 async function fetchWeatherFromCoords(lat: number, lon: number) {
   try {
-    // wttr.in aceita lat,lon como parâmetro de cidade
     const res = await axios.get(`https://wttr.in/${lat},${lon}?format=j1`)
 
     const city = res.data.nearest_area[0].areaName[0].value
@@ -46,7 +45,6 @@ async function fetchWeatherFromCoords(lat: number, lon: number) {
 
 async function fetchWeather() {
   try {
-    // wttr.in aceita lat,lon como parâmetro de cidade
     const locRes = await axios.get('https://ipwho.is/')
     const { city, region, latitude, longitude } = locRes.data
 
