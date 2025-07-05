@@ -1,7 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Clock from '@/components/Clock.vue';
+
+</script>
 
 <template>
-  <main class="h-screen w-screen flex items-center justify-center bg-dark">
-    <h1 class="text-light text-2xl">Hello, World!</h1>
+  <main class="h-screen w-screen flex flex-col items-center justify-center bg-dark gap-5">
+    <Clock />
   </main>
 </template>
