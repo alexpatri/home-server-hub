@@ -10,7 +10,7 @@ type Application struct {
 	Name      string             `json:"name" bson:"name"`
 	Tags      []string           `json:"tags" bson:"tags"`
 	Image     *Image             `json:"image" bson:"image"`
-	Container string             `json:"_" bson:"container"`
+	Container string             `json:"-" bson:"container"`
 	IP        string             `json:"ip" bson:"ip"`
 	Port      uint16             `json:"port" bson:"port"`
 	URL       string             `json:"url" bson:"url"`
