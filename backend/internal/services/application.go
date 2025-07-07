@@ -72,7 +72,7 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 	return result, nil
 }
 
-func (s *ApplicationService) CreateApplication(containerID string, input *models.ApplicationInput) (*models.Application, error) {
+func (s *ApplicationService) CreateApplication(containerID string, input *models.ApplicationInput, image *models.Image) (*models.Application, error) {
 	container, err := s.dockerCli.GetContainer(containerID)
 	if err != nil {
 		return nil, err
@@ -90,6 +90,7 @@ func (s *ApplicationService) CreateApplication(containerID string, input *models
 		Container: container.ID,
 		Port:      deref(input.Port, defaultPort),
 		IP:        container.IP,
+		Image:     image,
 		URL:       deref(input.URL, ""),
 		Tags:      input.Tags,
 	}

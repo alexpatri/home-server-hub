@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 
 	"home-server-hub/internal/models"
 	"home-server-hub/internal/services"
+	"home-server-hub/internal/utils"
 )
 
 // ApplicationController gerencia as rotas relacionadas a aplicações
@@ -37,6 +39,7 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 }
 
 // discoverApplications descobre aplicações Docker
+//
 //	@Summary		Descobre aplicações Docker rodando no servidor
 //	@Description	Busca por containers Docker em execução e retorna como aplicações potenciais
 //	@Tags			applications
@@ -57,6 +60,7 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 }
 
 // createApplication cria uma nova aplicação a partir de um container Docker
+//
 //	@Summary		Cria uma nova aplicação
 //	@Description	Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados
 //	@Tags			applications
@@ -69,22 +73,42 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 //	@Failure		500			{object}	map[string]string
 //	@Router			/applications [post]
 func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
-	containerID := ctx.Query("container_id")
+	containerID := ctx.Params("id")
 	if containerID == "" {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "Parâmetro 'container_id' é obrigatório",
+			"error": "Parâmetro 'id' (containerID) é obrigatório",
 		})
 	}
 
+	// Extrai campos do formulário
 	var input models.ApplicationInput
 
-	if err := ctx.BodyParser(&input); err != nil {
+	if name := ctx.FormValue("name"); name != "" {
+		input.Name = &name
+	}
+
+	if portStr := ctx.FormValue("port"); portStr != "" {
+		if portParsed, err := strconv.ParseUint(portStr, 10, 16); err == nil {
+			port := uint16(portParsed)
+			input.Port = &port
+		}
+	}
+
+	if url := ctx.FormValue("url"); url != "" {
+		input.URL = &url
+	}
+
+	// Extrai o arquivo da imagem
+	fileHeader, _ := ctx.FormFile("image")
+
+	imageData, err := utils.ParseImageFromFormFile(fileHeader)
+	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "JSON inválido: " + err.Error(),
+			"error": "Erro ao processar imagem: " + err.Error(),
 		})
 	}
 
-	application, err := c.appService.CreateApplication(containerID, &input)
+	application, err := c.appService.CreateApplication(containerID, &input, imageData)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao criar aplicação: " + err.Error(),
@@ -95,6 +119,7 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 }
 
 // listApplications lista todas as aplicações cadastradas
+//
 //	@Summary		Lista aplicações
 //	@Description	Retorna todas as aplicações já criadas e armazenadas no sistema
 //	@Tags			applications
