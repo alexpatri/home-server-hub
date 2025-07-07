@@ -2,7 +2,7 @@ basePath: /api/v1
 definitions:
   models.Application:
     properties:
-      container:
+      _:
         type: string
       id:
         type: string
@@ -17,19 +17,6 @@ definitions:
       status:
         description: Status não é armazenado, é calculado em tempo real
         type: string
-      tags:
-        items:
-          type: string
-        type: array
-      url:
-        type: string
-    type: object
-  models.ApplicationInput:
-    properties:
-      name:
-        type: string
-      port:
-        type: integer
       tags:
         items:
           type: string
@@ -80,7 +67,7 @@ definitions:
     type: object
   models.ListApplicationsResult:
     properties:
-      application:
+      applications:
         items:
           $ref: '#/definitions/models.Application'
         type: array
@@ -113,22 +100,34 @@ paths:
       summary: Lista aplicações
       tags:
       - applications
+  /applications/:
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Cria e armazena uma aplicação com base no ID de um container Docker
-        e dados opcionais enviados
+        e dados opcionais enviados via multipart/form-data
       parameters:
       - description: ID do container Docker
         in: query
-        name: containerID
+        name: container_id
         required: true
         type: string
-      - description: Dados opcionais para sobrescrever valores padrão
-        in: body
-        name: application
-        schema:
-          $ref: '#/definitions/models.ApplicationInput'
+      - description: Nome personalizado da aplicação
+        in: formData
+        name: name
+        type: string
+      - description: Porta a ser exposta
+        in: formData
+        name: port
+        type: integer
+      - description: URL pública da aplicação
+        in: formData
+        name: url
+        type: string
+      - description: Imagem opcional para representar a aplicação
+        in: formData
+        name: image
+        type: file
       produces:
       - application/json
       responses:

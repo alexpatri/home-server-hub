@@ -42,11 +42,13 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/applications/": {
             "post": {
-                "description": "Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados",
+                "description": "Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados via multipart/form-data",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -59,17 +61,33 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "ID do container Docker",
-                        "name": "containerID",
+                        "name": "container_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Dados opcionais para sobrescrever valores padrão",
-                        "name": "application",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/models.ApplicationInput"
-                        }
+                        "type": "string",
+                        "description": "Nome personalizado da aplicação",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Porta a ser exposta",
+                        "name": "port",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "URL pública da aplicação",
+                        "name": "url",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Imagem opcional para representar a aplicação",
+                        "name": "image",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -137,7 +155,7 @@ const docTemplate = `{
         "models.Application": {
             "type": "object",
             "properties": {
-                "container": {
+                "_": {
                     "type": "string"
                 },
                 "id": {
@@ -158,26 +176,6 @@ const docTemplate = `{
                 "status": {
                     "description": "Status não é armazenado, é calculado em tempo real",
                     "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ApplicationInput": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "port": {
-                    "type": "integer"
                 },
                 "tags": {
                     "type": "array",
@@ -256,7 +254,7 @@ const docTemplate = `{
         "models.ListApplicationsResult": {
             "type": "object",
             "properties": {
-                "application": {
+                "applications": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Application"

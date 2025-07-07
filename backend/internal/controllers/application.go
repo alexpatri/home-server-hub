@@ -62,21 +62,24 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 // createApplication cria uma nova aplicação a partir de um container Docker
 //
 //	@Summary		Cria uma nova aplicação
-//	@Description	Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados
+//	@Description	Cria e armazena uma aplicação com base no ID de um container Docker e dados opcionais enviados via multipart/form-data
 //	@Tags			applications
-//	@Accept			json
+//	@Accept			multipart/form-data
 //	@Produce		json
-//	@Param			containerID	query		string					true	"ID do container Docker"
-//	@Param			application	body		models.ApplicationInput	false	"Dados opcionais para sobrescrever valores padrão"
-//	@Success		201			{object}	models.Application
-//	@Failure		400			{object}	map[string]string
-//	@Failure		500			{object}	map[string]string
-//	@Router			/applications [post]
+//	@Param			container_id	query		string	true	"ID do container Docker"
+//	@Param			name			formData	string	false	"Nome personalizado da aplicação"
+//	@Param			port			formData	uint16	false	"Porta a ser exposta"
+//	@Param			url				formData	string	false	"URL pública da aplicação"
+//	@Param			image			formData	file	false	"Imagem opcional para representar a aplicação"
+//	@Success		201				{object}	models.Application
+//	@Failure		400				{object}	map[string]string
+//	@Failure		500				{object}	map[string]string
+//	@Router			/applications/ [post]
 func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
-	containerID := ctx.Params("id")
+	containerID := ctx.Query("container_id")
 	if containerID == "" {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "Parâmetro 'id' (containerID) é obrigatório",
+			"error": "Parâmetro 'container_id' é obrigatório",
 		})
 	}
 
