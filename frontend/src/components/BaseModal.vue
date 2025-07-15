@@ -6,7 +6,7 @@
         @click="$emit('close')"
       >
         <div
-          class="bg-white p-6 rounded-lg min-w-3/4 h-5/6 shadow-xl relative w-full max-w-md"
+          class="bg-white mx-3 p-6 rounded-lg min-w-3/4 h-5/6 shadow-xl relative w-full max-w-md"
           @click.stop
         >
           <div class="absolute top-0 left-0 w-full min-h-16 py-2 px-4 bg-white shadow-lg rounded-t-lg flex items-center">
