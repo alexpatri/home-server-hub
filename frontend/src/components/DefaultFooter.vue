@@ -5,7 +5,7 @@
     </div>
     <button
       class="text-light text-2xl hover:cursor-pointer hover:text-primary transition-all"
-      @click="console.log('abrir modal de settings')"
+      @click="$emit('configBtnClick')"
     >
       <font-awesome-icon :icon="['fas', 'gear']" />
     </button>
@@ -14,4 +14,6 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+defineEmits(['configBtnClick'])
 </script>
