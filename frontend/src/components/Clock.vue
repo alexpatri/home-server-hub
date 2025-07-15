@@ -13,6 +13,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { useLoading } from '@/stores/loadingStore'
+
+const { show, hide } = useLoading()
 
 const time = ref('00:00')
 const weather = ref<null | { temp: number; location: string }>(null)
@@ -25,6 +28,7 @@ function updateTime() {
 }
 
 async function fetchWeatherFromCoords(lat: number, lon: number) {
+  show()
   try {
     const res = await axios.get(`https://wttr.in/${lat},${lon}?format=j1`)
 
@@ -40,6 +44,8 @@ async function fetchWeatherFromCoords(lat: number, lon: number) {
     }
   } catch (err) {
     console.error(err)
+  } finally {
+    hide()
   }
 }
 
