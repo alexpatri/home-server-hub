@@ -16,7 +16,7 @@
               @click="$emit('close')"
               class="absolute top-2 right-2 text-gray-500 hover:text-primary hover:cursor-pointer"
             >
-              <font-awesome-icon :icon="['fas', 'x']" />
+              <font-awesome-icon :icon="['fas', 'xmark']" />
             </button>
           </div>
 

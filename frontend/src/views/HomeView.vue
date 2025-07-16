@@ -10,9 +10,11 @@
           defaultImage="/default-app.png"
         />
       </div>
-      <BaseModal v-if="showConfigModal" title="Configurações" @close="showConfigModal = false"/>
+      <BaseModal v-if="showConfigModal" title="Configurações" @close="showConfigModal = false">
+        
+      </BaseModal>
     </main>
-    <DefaultFooter @configBtnClick="showConfigModal = true"/>
+    <DefaultFooter @configBtnClick="showConfigModal = true" />
   </div>
 </template>
 

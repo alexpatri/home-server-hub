@@ -25,7 +25,7 @@
           @click="clearSearch"
           class="flex items-center justify-center w-6 h-6 text-gray-400 hover:text-dark hover:cursor-pointer transition-colors duration-200 ml-2"
         >
-          <font-awesome-icon :icon="['fas', 'x']" />
+          <font-awesome-icon :icon="['fas', 'xmark']" />
         </button>
       </div>
     </div>
