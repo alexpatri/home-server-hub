@@ -105,13 +105,12 @@ interface Application {
 
 interface DiscoveredApp {
   container: string
-  exists: boolean
   ip: string
   name: string
   port: number
   tags: string[]
-  editableName: string
-  editableTags: string
+  url: string
+  image: File | null
 }
 
 interface DiscoverResponse {
@@ -155,7 +154,9 @@ const discoverApplications = async (): Promise<void> => {
     discoveredApps.value = response.data.discovered.map((app) => ({
       ...app,
       editableName: app.name,
-      editableTags: app.tags.join(', '),
+      editablePort: app.port,
+      editableUrl: '',
+      editableImage: null,
     }))
 
     hasSearched.value = true
@@ -170,21 +171,26 @@ const saveApplication = async (app: DiscoveredApp): Promise<void> => {
   isSaving.value = true
 
   try {
-    const tags = app.editableTags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0)
+    // Criar FormData para incluir a imagem se houver
+    const formData = new FormData()
+    formData.append('name', app.name)
+    formData.append('ip', app.ip)
+    formData.append('port', app.port.toString())
 
-    const payload = {
-      name: app.editableName || app.name,
-      tags,
-      ip: app.ip,
-      port: app.port,
+    if (app.url) {
+      formData.append('url', app.url)
     }
 
-    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/applications`, payload, {
+    if (app.image) {
+      formData.append('image', app.image)
+    }
+
+    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/applications`, formData, {
       params: {
         container_id: app.container,
+      },
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
     })
 
