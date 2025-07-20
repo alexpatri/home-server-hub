@@ -10,9 +10,12 @@
           defaultImage="/default-app.png"
         />
       </div>
-      <BaseModal v-if="showConfigModal" title="Configurações" @close="showConfigModal = false">
-        
-      </BaseModal>
+      
+      <ConfigModal
+        v-if="showConfigModal"
+        @close="showConfigModal = false"
+        @applications-updated="fetchApplications"
+      />
     </main>
     <DefaultFooter @configBtnClick="showConfigModal = true" />
   </div>
@@ -24,7 +27,7 @@ import axios from 'axios'
 import DefaultFooter from '@/components/DefaultFooter.vue'
 import DeafaultHeader from '@/components/DeafaultHeader.vue'
 import AppCard from '@/components/AppCard.vue'
-import BaseModal from '@/components/BaseModal.vue'
+import ConfigModal from '@/components/ConfigModal.vue'
 
 interface Application {
   id: string

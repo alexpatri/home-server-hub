@@ -6,10 +6,12 @@
         @click="$emit('close')"
       >
         <div
-          class="bg-white mx-3 p-6 rounded-lg min-w-3/4 h-5/6 shadow-xl relative w-full max-w-md"
+          class="bg-white mx-3 rounded-lg min-w-3/4 h-5/6 shadow-xl w-full max-w-md flex flex-col"
           @click.stop
         >
-          <div class="absolute top-0 left-0 w-full min-h-16 py-2 px-4 bg-white shadow-lg rounded-t-lg flex items-center">
+          <div
+            class="relative w-full min-h-16 py-2 px-4 bg-white shadow-lg rounded-t-lg flex items-center"
+          >
             <h1 class="font-bold text-2xl text-dark">{{ title }}</h1>
 
             <button
@@ -20,7 +22,9 @@
             </button>
           </div>
 
-          <slot> </slot>
+          <div class="w-full h-full p-4">
+            <slot> </slot>
+          </div>
         </div>
       </div>
     </transition>

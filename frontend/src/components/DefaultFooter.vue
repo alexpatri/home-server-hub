@@ -4,7 +4,7 @@
       <!--TODO: observability com prometheus-->
     </div>
     <button
-      class="text-light text-2xl hover:cursor-pointer hover:text-primary transition-all"
+      class="text-light text-2xl hover:cursor-pointer hover:text-gray-400 transition-all"
       @click="$emit('configBtnClick')"
     >
       <font-awesome-icon :icon="['fas', 'gear']" />
