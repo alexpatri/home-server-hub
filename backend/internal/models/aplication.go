@@ -18,10 +18,10 @@ type Application struct {
 }
 
 type ApplicationInput struct {
-	Name  *string  `json:"name,omitempty"`
-	Port  *uint16  `json:"port,omitempty"`
-	URL   *string  `json:"url,omitempty"`
-	Tags  []string `json:"tags,omitempty"`
+	Name *string  `json:"name,omitempty"`
+	Port *uint16  `json:"port,omitempty"`
+	URL  *string  `json:"url,omitempty"`
+	Tags []string `json:"tags,omitempty"`
 }
 
 // Image representa a imagem/ícone associado à aplicação
@@ -51,7 +51,6 @@ type DiscoveredApplication struct {
 	IP        string   `json:"ip"`
 	Port      uint16   `json:"port"`
 	Tags      []string `json:"tags"`
-	Exists    bool     `json:"exists"`
 }
 
 // DiscoverResult representa o resultado da operação de descoberta

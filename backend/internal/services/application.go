@@ -42,31 +42,25 @@ func (s *ApplicationService) DiscoverApplications() (*models.DiscoverResult, err
 	}
 
 	for _, container := range containers {
-		// Ignorar containers do sistema e infraestrutura
-		if isSystemContainer(container.Name, container.Image) {
-			continue
+		// Verifica se o container deve ser processado
+		if !isSystemContainer(container.Name, container.Image) && !existingContainers[container.ID] {
+			// Determinar porta principal
+			var port uint16
+			if len(container.Ports) > 0 {
+				port = container.Ports[0].HostPort
+			}
+
+			// Criar tags baseadas no nome e imagem
+			tags := generateTags(container.Name, container.Image)
+
+			result.Discovered = append(result.Discovered, models.DiscoveredApplication{
+				Name:      formatContainerName(container.Name),
+				Container: container.ID,
+				IP:        container.IP,
+				Port:      port,
+				Tags:      tags,
+			})
 		}
-
-		// Verifica se a aplicação já existe no banco
-		exists := existingContainers[container.ID]
-
-		// Determinar porta principal
-		var port uint16
-		if len(container.Ports) > 0 {
-			port = container.Ports[0].HostPort
-		}
-
-		// Criar tags baseadas no nome e imagem
-		tags := generateTags(container.Name, container.Image)
-
-		result.Discovered = append(result.Discovered, models.DiscoveredApplication{
-			Name:      formatContainerName(container.Name),
-			Container: container.ID,
-			IP:        container.IP,
-			Port:      port,
-			Tags:      tags,
-			Exists:    exists, //TODO: nome do atributo mais autoexplicativo
-		})
 	}
 
 	return result, nil
