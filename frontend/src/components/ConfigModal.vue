@@ -1,6 +1,6 @@
 <template>
   <BaseModal title="Configurações" @close="$emit('close')">
-    <div class="flex h-full min-h-[600px]">
+    <div class="flex h-full w-full min-h-[600px]">
       <!-- Menu lateral -->
       <div class="w-64 pr-4 border-r-2 border-gray-300">
         <ul class="space-y-2">
@@ -22,7 +22,7 @@
       </div>
 
       <!-- Conteúdo -->
-      <div class="flex-1 pl-4">
+      <div class="flex-1 pl-4 w-1/2">
         <component :is="currentTabComponent" @applicationsUpdated="handleApplicationsUpdated" />
       </div>
     </div>

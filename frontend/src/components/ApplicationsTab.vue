@@ -1,25 +1,13 @@
 <template>
-  <div class="h-full">
+  <div class="h-full w-full">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">Gerenciar Aplicações</h2>
-      <button
-        @click="discoverApplications"
-        :disabled="isDiscovering"
-        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-      >
-        <font-awesome-icon
-          :icon="isDiscovering ? 'spinner' : 'search'"
-          :class="{ 'animate-spin': isDiscovering }"
-          class="mr-2"
-        />
-        {{ isDiscovering ? 'Buscando...' : 'Buscar Novas Aplicações' }}
-      </button>
     </div>
 
     <!-- Lista de aplicações atuais -->
-    <div class="mb-8">
-      <h3 class="text-lg font-semibold mb-4">Aplicações Instaladas</h3>
-      <div v-if="!applications || applications.length === 0" class="text-gray-500 text-center py-8">
+    <div class="mb-8 w-full h-96">
+      <h3 class="text-lg font-semibold mb-4">Aplicações Registradas</h3>
+      <div v-if="!applications || applications.length === 0" class="text-gray-500 py-8 h-full flex justify-center items-center">
         Nenhuma aplicação encontrada
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -61,25 +49,33 @@
     </div>
 
     <!-- Aplicações descobertas -->
-    <div v-if="discoveredApps.length > 0" class="mb-8">
-      <h3 class="text-lg font-semibold mb-4">
-        Aplicações Descobertas ({{ discoveredApps.length }})
-      </h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="mb-8 w-full space-y-4">
+      <div class="flex justify-between">
+        <h3 class="text-lg font-semibold mb-4">
+          Aplicações Disponíveis ({{ discoveredApps.length }})
+        </h3>
+        <button
+          @click="discoverApplications"
+          :disabled="isDiscovering"
+          class="bg-primary text-white px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        >
+          <font-awesome-icon
+            :icon="isDiscovering ? 'spinner' : 'search'"
+            :class="{ 'animate-spin': isDiscovering }"
+            class="mr-2"
+          />
+          {{ isDiscovering ? 'Buscando...' : 'Buscar Aplicações' }}
+        </button>
+      </div>
+      <div v-if="discoveredApps.length > 0" class="flex gap-4 overflow-x-auto w-full pb-5">
         <DiscoveredAppCard
           v-for="(app, index) in discoveredApps"
           :key="index"
           :app="app"
           :is-saving="isSaving"
-          @save="saveApplication"
+          @click="console.log('test')"
         />
       </div>
-    </div>
-
-    <!-- Estado vazio para aplicações descobertas -->
-    <div v-else-if="hasSearched && !isDiscovering" class="text-center py-8 text-gray-500">
-      <font-awesome-icon icon="search" class="text-4xl mb-4" />
-      <p>Nenhuma nova aplicação encontrada</p>
     </div>
   </div>
 </template>
