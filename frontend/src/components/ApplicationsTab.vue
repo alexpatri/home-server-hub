@@ -87,164 +87,13 @@
     </div>
 
     <!-- Formulário de edição -->
-    <div v-else class="h-full w-full">
-      <div class="mb-6">
-        <button
-          @click="closeEditForm"
-          class="flex items-center text-blue-600 hover:text-blue-800 mb-4"
-        >
-          <font-awesome-icon icon="arrow-left" class="mr-2" />
-          Voltar
-        </button>
-        <h2 class="text-2xl font-bold">Configurar Aplicação</h2>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl">
-        <form @submit.prevent="saveApplication">
-          <!-- Preview da imagem e informações básicas -->
-          <div class="flex items-center mb-6">
-            <div
-              class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center mr-4 relative overflow-hidden"
-            >
-              <img
-                v-if="imagePreview"
-                :src="imagePreview"
-                alt="Preview"
-                class="w-full h-full object-cover rounded-lg"
-              />
-              <font-awesome-icon v-else icon="cube" class="text-gray-400 text-2xl" />
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold">{{ editingApp?.name }}</h3>
-              <p class="text-gray-600">{{ editingApp?.ip }}</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Nome da aplicação -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nome da aplicação <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="formData.name"
-                type="text"
-                required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Digite o nome da aplicação"
-              />
-            </div>
-
-            <!-- Porta -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Porta <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model.number="formData.port"
-                type="number"
-                required
-                min="1"
-                max="65535"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="8080"
-              />
-            </div>
-
-            <!-- URL pública -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                URL pública (opcional)
-              </label>
-              <input
-                v-model="formData.url"
-                type="url"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://exemplo.com"
-              />
-            </div>
-
-            <!-- Tags -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Tags (separadas por vírgula)
-              </label>
-              <input
-                v-model="formData.tags"
-                type="text"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="web, dashboard, monitoramento"
-              />
-            </div>
-
-            <!-- Upload de imagem -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Imagem da aplicação (opcional)
-              </label>
-              <div
-                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gray-400 transition-colors"
-              >
-                <div class="space-y-1 text-center">
-                  <font-awesome-icon
-                    icon="cloud-upload-alt"
-                    class="mx-auto h-12 w-12 text-gray-400"
-                  />
-                  <div class="flex text-sm text-gray-600">
-                    <label
-                      class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                    >
-                      <span>Selecionar arquivo</span>
-                      <input
-                        ref="fileInput"
-                        type="file"
-                        accept="image/*"
-                        @change="handleImageUpload"
-                        class="sr-only"
-                      />
-                    </label>
-                    <p class="pl-1">ou arraste e solte</p>
-                  </div>
-                  <p class="text-xs text-gray-500">PNG, JPG, GIF até 5MB</p>
-                  <button
-                    v-if="formData.image || imagePreview"
-                    @click="clearImage"
-                    type="button"
-                    class="text-red-600 hover:text-red-800 text-sm mt-2"
-                  >
-                    <font-awesome-icon icon="trash" class="mr-1" />
-                    Remover imagem
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Botões de ação -->
-          <div class="flex justify-end space-x-4 mt-8">
-            <button
-              @click="closeEditForm"
-              type="button"
-              class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              :disabled="isSaving"
-              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              <font-awesome-icon
-                :icon="isSaving ? 'spinner' : 'save'"
-                :class="{ 'animate-spin': isSaving }"
-                class="mr-2"
-              />
-              {{ isSaving ? 'Salvando...' : 'Salvar Aplicação' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <EditAppForm
+      v-else
+      :app="editingApp!"
+      :is-saving="isSaving"
+      @back="closeEditForm"
+      @save="saveApplication"
+    />
   </div>
 </template>
 
@@ -253,6 +102,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import DiscoveredAppCard from '@/components/DiscoveredAppCard.vue'
+import EditAppForm from '@/components/EditAppForm.vue'
 
 // Interfaces
 interface Application {
@@ -306,16 +156,6 @@ const hasSearched = ref<boolean>(false)
 // Estado do formulário de edição
 const showEditForm = ref<boolean>(false)
 const editingApp = ref<DiscoveredApp | null>(null)
-const imagePreview = ref<string | null>(null)
-const fileInput = ref<HTMLInputElement | null>(null)
-
-const formData = ref<FormData>({
-  name: '',
-  port: 8080,
-  url: '',
-  tags: '',
-  image: null,
-})
 
 // Métodos
 const fetchApplications = async (): Promise<void> => {
@@ -354,100 +194,38 @@ const discoverApplications = async (): Promise<void> => {
 
 const openEditForm = (app: DiscoveredApp): void => {
   editingApp.value = app
-  formData.value = {
-    name: app.name,
-    port: app.port,
-    url: app.url || '',
-    tags: app.tags.join(', '),
-    image: app.image,
-  }
-
-  // Limpar preview de imagem anterior
-  imagePreview.value = null
-
   showEditForm.value = true
 }
 
 const closeEditForm = (): void => {
   showEditForm.value = false
   editingApp.value = null
-  imagePreview.value = null
-
-  // Reset form data
-  formData.value = {
-    name: '',
-    port: 8080,
-    url: '',
-    tags: '',
-    image: null,
-  }
-
-  // Clear file input
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
 }
 
-const handleImageUpload = (event: Event): void => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-
-  if (file) {
-    // Validar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione apenas arquivos de imagem')
-      return
-    }
-
-    // Validar tamanho (5MB máximo)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('A imagem deve ter no máximo 5MB')
-      return
-    }
-
-    formData.value.image = file
-
-    // Criar preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-const clearImage = (): void => {
-  formData.value.image = null
-  imagePreview.value = null
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
-}
-
-const saveApplication = async (): Promise<void> => {
+const saveApplication = async (formData: FormData): Promise<void> => {
   if (!editingApp.value) return
 
   isSaving.value = true
 
   try {
-    const tags = formData.value.tags
+    const tags = formData.tags
       .split(',')
       .map((tag) => tag.trim())
       .filter((tag) => tag.length > 0)
 
     // Criar FormData para incluir a imagem se houver
     const formDataToSend = new FormData()
-    formDataToSend.append('name', formData.value.name)
+    formDataToSend.append('name', formData.name)
     formDataToSend.append('ip', editingApp.value.ip)
-    formDataToSend.append('port', formData.value.port.toString())
+    formDataToSend.append('port', formData.port.toString())
     formDataToSend.append('tags', JSON.stringify(tags))
 
-    if (formData.value.url) {
-      formDataToSend.append('url', formData.value.url)
+    if (formData.url) {
+      formDataToSend.append('url', formData.url)
     }
 
-    if (formData.value.image) {
-      formDataToSend.append('image', formData.value.image)
+    if (formData.image) {
+      formDataToSend.append('image', formData.image)
     }
 
     await axios.post(`${import.meta.env.VITE_API_BASE_URL}/applications`, formDataToSend, {
