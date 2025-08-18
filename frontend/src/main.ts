@@ -20,6 +20,8 @@ import {
   faTrash,
   faSave,
   faSpinner,
+  faArrowLeft,
+  faCloudUploadAlt,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -35,6 +37,8 @@ library.add(
   faTrash,
   faSave,
   faSpinner,
+  faArrowLeft,
+  faCloudUploadAlt,
 )
 
 const app = createApp(App)
