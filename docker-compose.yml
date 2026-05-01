@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/docker/Dockerfile
+      dockerfile: docker/Dockerfile
     container_name: home_server_backend
     network_mode: "host"
     environment:

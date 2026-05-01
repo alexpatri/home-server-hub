@@ -6,11 +6,10 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # Copia arquivos do backend
-COPY backend/go.mod backend/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY backend .
-
+COPY . .
 # Compila o binário
 RUN go build -ldflags="-s -w" -o bin/main ./cmd/main.go
 

@@ -18,7 +18,6 @@ Home Server Hub é uma aplicação simples que serve como ponto central para vis
 
 ### Stack Tecnológica
 
-- **Frontend**: Vue.js - Interface de usuário reativa e moderna
 - **Backend**: Go com Fiber - API RESTful de alta performance e baixo consumo
 - **Banco de Dados**: MongoDB - Armazenamento de dados flexível e escalável
 - **Integração**: Docker API - Para descoberta e monitoramento de aplicações containerizadas
@@ -83,7 +82,6 @@ Home Server Hub é uma aplicação simples que serve como ponto central para vis
 - Docker instalado no servidor
 - MongoDB rodando
 - Go 1.16+ (para compilar o backend)
-- Node.js 14+ (para o frontend)
 
 ### Instalação
 
@@ -117,12 +115,10 @@ Home Server Hub é uma aplicação simples que serve como ponto central para vis
 
 ## Roadmap Futuro
 
-- Autenticação de usuários
 - Monitoramento de recursos do servidor (CPU, memória, disco)
 - Gerenciamento de containers (iniciar, parar, reiniciar)
 - Visualização de logs
 - Notificações de status
-- Temas personalizáveis
 
 ## Contribuição
 
