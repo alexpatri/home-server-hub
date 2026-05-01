@@ -23,7 +23,6 @@ jobs:
 
     - name: Build
       run: |
-        cd backend
         go build -v ./...
 
     # - name: Test
