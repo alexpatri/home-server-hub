@@ -73,6 +73,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Porta a ser exposta",
                         "name": "port",
                         "in": "formData"
@@ -149,15 +150,49 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/applications/{id}/image": {
+            "get": {
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Retorna a imagem de uma aplicação",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da aplicação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "models.Application": {
             "type": "object",
             "properties": {
-                "_": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -174,7 +209,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "description": "Status não é armazenado, é calculado em tempo real",
+                    "description": "calculado em tempo real, não persistido",
                     "type": "string"
                 },
                 "tags": {
@@ -208,9 +243,6 @@ const docTemplate = `{
                 "container": {
                     "type": "string"
                 },
-                "exists": {
-                    "type": "boolean"
-                },
                 "ip": {
                     "type": "string"
                 },
@@ -231,12 +263,6 @@ const docTemplate = `{
         "models.Image": {
             "type": "object",
             "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "height": {
                     "type": "integer"
                 },
@@ -271,7 +297,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "localhost:8080",
+	Host:             "localhost:8000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Home Server Hub API",

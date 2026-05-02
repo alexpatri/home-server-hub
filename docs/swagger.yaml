@@ -2,8 +2,6 @@ basePath: /api/v1
 definitions:
   models.Application:
     properties:
-      _:
-        type: string
       id:
         type: string
       image:
@@ -15,7 +13,7 @@ definitions:
       port:
         type: integer
       status:
-        description: Status não é armazenado, é calculado em tempo real
+        description: calculado em tempo real, não persistido
         type: string
       tags:
         items:
@@ -37,8 +35,6 @@ definitions:
     properties:
       container:
         type: string
-      exists:
-        type: boolean
       ip:
         type: string
       name:
@@ -52,10 +48,6 @@ definitions:
     type: object
   models.Image:
     properties:
-      data:
-        items:
-          type: integer
-        type: array
       height:
         type: integer
       name:
@@ -74,7 +66,7 @@ definitions:
       total:
         type: integer
     type: object
-host: localhost:8080
+host: localhost:8000
 info:
   contact: {}
   description: Documentação da API Home Server Hub
@@ -117,6 +109,7 @@ paths:
         name: name
         type: string
       - description: Porta a ser exposta
+        format: int32
         in: formData
         name: port
         type: integer
@@ -148,6 +141,30 @@ paths:
               type: string
             type: object
       summary: Cria uma nova aplicação
+      tags:
+      - applications
+  /applications/{id}/image:
+    get:
+      parameters:
+      - description: ID da aplicação
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retorna a imagem de uma aplicação
       tags:
       - applications
   /applications/discover:

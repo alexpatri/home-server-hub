@@ -7,24 +7,11 @@ services:
     network_mode: "host"
     environment:
       SERVER_PORT: 8000
-      MONGODB_URI: mongodb://localhost:27017
+      SQLITE_PATH: /app/data/home_server_hub.db
+      IMAGES_DIR: /app/data/images
       DOCKER_HOST: unix:///var/run/docker.sock
     ports:
       - "8000:8000"
-    depends_on:
-      - mongodb
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-  mongodb:
-    image: mongo:7.0
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: home_server_hub
-    volumes:
-      - mongodb_data:/data/db
-
-volumes:
-  mongodb_data:
+      - ./data:/app/data

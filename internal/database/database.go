@@ -2,43 +2,69 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"log"
+	"path/filepath"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	_ "modernc.org/sqlite"
 
 	"home-server-hub/internal/config"
 )
 
-// Connect estabelece conexão com o Banco
-func Connect(dbConfig config.DatabaseConfig) (*mongo.Database, error) {
+const schema = `
+CREATE TABLE IF NOT EXISTS applications (
+    id           TEXT PRIMARY KEY,
+    name         TEXT NOT NULL,
+    tags         TEXT NOT NULL DEFAULT '[]',
+    container    TEXT NOT NULL DEFAULT '',
+    ip           TEXT NOT NULL DEFAULT '',
+    port         INTEGER NOT NULL DEFAULT 0,
+    url          TEXT NOT NULL DEFAULT '',
+    image_name   TEXT NOT NULL DEFAULT '',
+    image_width  INTEGER NOT NULL DEFAULT 0,
+    image_height INTEGER NOT NULL DEFAULT 0,
+    image_size   INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_applications_container ON applications(container);
+`
+
+// Connect abre o arquivo SQLite, aplica PRAGMAs e garante o schema.
+func Connect(dbConfig config.DatabaseConfig) (*sql.DB, error) {
+	dsn := fmt.Sprintf("file:%s?_pragma=journal_mode(WAL)&_pragma=foreign_keys(ON)&_pragma=busy_timeout(5000)",
+		filepath.ToSlash(dbConfig.Path))
+
+	db, err := sql.Open("sqlite", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	// SQLite não lida bem com várias conexões abertas escrevendo em paralelo.
+	db.SetMaxOpenConns(1)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	clientOptions := options.Client().ApplyURI(dbConfig.URI)
-	client, err := mongo.Connect(ctx, clientOptions)
-	if err != nil {
+	if err := db.PingContext(ctx); err != nil {
+		_ = db.Close()
 		return nil, err
 	}
 
-	// Verificar conexão
-	err = client.Ping(ctx, nil)
-	if err != nil {
+	if _, err := db.ExecContext(ctx, schema); err != nil {
+		_ = db.Close()
 		return nil, err
 	}
 
-	log.Println("Conectado ao MongoDB!")
-	return client.Database(dbConfig.DatabaseName), nil
+	log.Printf("Conectado ao SQLite em %s", dbConfig.Path)
+	return db, nil
 }
 
-// Disconnect encerra a conexão com o Banco
-func Disconnect(db *mongo.Database) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := db.Client().Disconnect(ctx); err != nil {
-		log.Fatalf("Erro ao desconectar do MongoDB: %v", err)
+// Disconnect fecha a conexão com o banco.
+func Disconnect(db *sql.DB) {
+	if err := db.Close(); err != nil {
+		log.Printf("Erro ao fechar SQLite: %v", err)
+		return
 	}
-	log.Println("Desconectado do MongoDB")
+	log.Println("Desconectado do SQLite")
 }

@@ -29,6 +29,7 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 
 	apps.Get("/discover", c.discoverApplications)
 	apps.Get("/", c.listApplications)
+	apps.Get("/:id/image", c.getApplicationImage)
 
 	apps.Post("/", c.createApplication)
 
@@ -119,6 +120,26 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(application)
+}
+
+// getApplicationImage retorna o arquivo de imagem associado a uma aplicação
+//
+//	@Summary		Retorna a imagem de uma aplicação
+//	@Tags			applications
+//	@Produce		octet-stream
+//	@Param			id	path		string	true	"ID da aplicação"
+//	@Success		200	{file}		file
+//	@Failure		404	{object}	map[string]string
+//	@Router			/applications/{id}/image [get]
+func (c *ApplicationController) getApplicationImage(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	path := c.appService.GetApplicationImagePath(id)
+	if err := ctx.SendFile(path); err != nil {
+		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+			"error": "Imagem não encontrada",
+		})
+	}
+	return nil
 }
 
 // listApplications lista todas as aplicações cadastradas

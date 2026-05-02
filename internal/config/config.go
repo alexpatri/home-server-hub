@@ -19,8 +19,8 @@ type ServerConfig struct {
 
 // DatabaseConfig armazena as configurações do banco de dados
 type DatabaseConfig struct {
-	URI          string
-	DatabaseName string
+	Path      string
+	ImagesDir string
 }
 
 // DockerConfig armazena as configurações do cliente Docker
@@ -35,8 +35,8 @@ func LoadConfig() *Config {
 			Port: getEnv("SERVER_PORT", "8000"),
 		},
 		Database: DatabaseConfig{
-			URI:          getEnv("MONGODB_URI", "mongodb://localhost:27017"),
-			DatabaseName: getEnv("MONGODB_DATABASE", "home_server_hub"),
+			Path:      getEnv("SQLITE_PATH", "/app/data/home_server_hub.db"),
+			ImagesDir: getEnv("IMAGES_DIR", "/app/data/images"),
 		},
 		Docker: DockerConfig{
 			Host: getEnv("DOCKER_HOST", "unix:///var/run/docker.sock"),

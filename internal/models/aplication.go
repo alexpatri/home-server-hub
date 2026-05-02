@@ -1,20 +1,16 @@
 package models
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
-
 // Application representa uma aplicação no home server
 type Application struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name      string             `json:"name" bson:"name"`
-	Tags      []string           `json:"tags" bson:"tags"`
-	Image     *Image             `json:"image" bson:"image"`
-	Container string             `json:"-" bson:"container"`
-	IP        string             `json:"ip" bson:"ip"`
-	Port      uint16             `json:"port" bson:"port"`
-	URL       string             `json:"url" bson:"url"`
-	Status    string             `json:"status" bson:"-"` // Status não é armazenado, é calculado em tempo real
+	ID        string   `json:"id"`
+	Name      string   `json:"name"`
+	Tags      []string `json:"tags"`
+	Image     *Image   `json:"image"`
+	Container string   `json:"-"`
+	IP        string   `json:"ip"`
+	Port      uint16   `json:"port"`
+	URL       string   `json:"url"`
+	Status    string   `json:"status"` // calculado em tempo real, não persistido
 }
 
 type ApplicationInput struct {
@@ -26,22 +22,23 @@ type ApplicationInput struct {
 
 // Image representa a imagem/ícone associado à aplicação
 type Image struct {
-	Name   string `json:"name" bson:"name"`
-	Data   []byte `json:"data" bson:"data"`
-	Height int    `json:"height" bson:"height"`
-	Width  int    `json:"width" bson:"width"`
-	Size   int    `json:"size" bson:"size"`
+	Name   string `json:"name"`
+	Data   []byte `json:"-"` // só usado durante o upload; persistido em disco
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+	Size   int    `json:"size"`
 }
 
 // ApplicationRepository define a interface para acesso aos dados de aplicações
 type ApplicationRepository interface {
 	FindAll() ([]Application, error)
-	FindByID(id primitive.ObjectID) (*Application, error)
+	FindByID(id string) (*Application, error)
 	FindByContainer(containerID string) (*Application, error)
 	Create(application *Application) error
 	Update(application *Application) error
-	Delete(id primitive.ObjectID) error
+	Delete(id string) error
 	FindExistingContainers() (map[string]bool, error)
+	ImagePath(id string) string
 }
 
 // DiscoveredApplication representa uma aplicação descoberta pelo sistema

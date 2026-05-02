@@ -96,6 +96,11 @@ func (s *ApplicationService) CreateApplication(containerID string, input *models
 	return application, nil
 }
 
+// GetApplicationImagePath retorna o caminho do arquivo de imagem de uma aplicação.
+func (s *ApplicationService) GetApplicationImagePath(id string) string {
+	return s.repository.ImagePath(id)
+}
+
 func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult, error) {
 	applicatrions, err := s.repository.FindAll()
 	if err != nil {
