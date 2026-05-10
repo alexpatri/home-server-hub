@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 
@@ -184,6 +185,13 @@ func (c *Client) GetContainerStatus(containerID string) (string, error) {
 		return "running", nil
 	}
 	return "stopped", nil
+}
+
+// Events abre um stream de eventos do daemon Docker. O stream permanece aberto
+// até o ctx ser cancelado ou um erro irrecuperável ser reportado no canal de
+// erros. Cancelamento do ctx é o jeito normal de encerrar.
+func (c *Client) Events(ctx context.Context) (<-chan events.Message, <-chan error) {
+	return c.client.Events(ctx, events.ListOptions{})
 }
 
 // Close fecha o cliente Docker
