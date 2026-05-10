@@ -143,6 +143,117 @@ paths:
       summary: Cria uma nova aplicação
       tags:
       - applications
+  /applications/{id}:
+    delete:
+      parameters:
+      - description: ID da aplicação
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remove uma aplicação
+      tags:
+      - applications
+    get:
+      parameters:
+      - description: ID da aplicação
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Application'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retorna uma aplicação
+      tags:
+      - applications
+    put:
+      consumes:
+      - multipart/form-data
+      description: Aceita os mesmos campos do POST via multipart/form-data; apenas
+        os campos enviados são atualizados.
+      parameters:
+      - description: ID da aplicação
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Novo nome
+        in: formData
+        name: name
+        type: string
+      - description: Nova porta
+        format: int32
+        in: formData
+        name: port
+        type: integer
+      - description: Nova URL
+        in: formData
+        name: url
+        type: string
+      - description: Nova imagem
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Application'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Atualiza uma aplicação
+      tags:
+      - applications
   /applications/{id}/image:
     get:
       parameters:
