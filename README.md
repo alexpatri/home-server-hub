@@ -47,15 +47,19 @@ O conteúdo binário das imagens é gravado em `<IMAGES_DIR>/<id>` e servido via
 
 #### Aplicações
 
-| Método | Rota                            | Descrição                                       |
-| ------ | ------------------------------- | ----------------------------------------------- |
-| GET    | `/applications`                 | Lista todas as aplicações registradas           |
-| POST   | `/applications`                 | Cria uma nova aplicação a partir de um container|
-| GET    | `/applications/discover`        | Descobre containers Docker disponíveis          |
-| GET    | `/applications/{id}/image`      | Retorna o arquivo de imagem da aplicação        |
-| PUT    | `/applications/{id}`            | Atualiza uma aplicação *(planejado)*            |
-| DELETE | `/applications/{id}`            | Remove uma aplicação registrada *(planejado)*   |
-| GET    | `/applications/{id}`            | Retorna uma aplicação específica *(planejado)*  |
+| Método | Rota                            | Descrição                                            |
+| ------ | ------------------------------- | ---------------------------------------------------- |
+| GET    | `/applications`                 | Lista todas as aplicações registradas                |
+| POST   | `/applications`                 | Cria uma nova aplicação a partir de um container     |
+| GET    | `/applications/discover`        | Descobre containers Docker disponíveis               |
+| GET    | `/applications/{id}`            | Retorna uma aplicação específica                     |
+| PUT    | `/applications/{id}`            | Atualiza parcialmente uma aplicação                  |
+| DELETE | `/applications/{id}`            | Remove uma aplicação                                 |
+| GET    | `/applications/{id}/image`      | Retorna o arquivo de imagem da aplicação             |
+
+`PUT /applications/{id}` aceita `multipart/form-data` com os mesmos campos do `POST` (`name`, `port`, `url`, `image`); apenas os campos enviados são atualizados, os demais permanecem inalterados.
+
+`DELETE /applications/{id}` responde `204 No Content` em sucesso e `404` se o ID não existir.
 
 Todas as rotas estão sob o prefixo `/api/v1`.
 
