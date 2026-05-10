@@ -1,5 +1,10 @@
 package models
 
+import "errors"
+
+// ErrApplicationNotFound é retornado quando uma aplicação não existe.
+var ErrApplicationNotFound = errors.New("application not found")
+
 // Application representa uma aplicação no home server
 type Application struct {
 	ID        string   `json:"id"`

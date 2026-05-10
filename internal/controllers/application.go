@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -31,12 +32,10 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 	apps.Get("/", c.listApplications)
 	apps.Get("/:id/image", c.getApplicationImage)
 
+	apps.Get("/:id", c.getApplication)
 	apps.Post("/", c.createApplication)
-
-	// Outros endpoints serão implementados posteriormente
-	// apps.Get("/:id", c.getApplication)
-	// apps.Put("/:id", c.updateApplication)
-	// apps.Delete("/:id", c.deleteApplication)
+	apps.Put("/:id", c.updateApplication)
+	apps.Delete("/:id", c.deleteApplication)
 }
 
 // discoverApplications descobre aplicações Docker
@@ -140,6 +139,115 @@ func (c *ApplicationController) getApplicationImage(ctx *fiber.Ctx) error {
 		})
 	}
 	return nil
+}
+
+// getApplication retorna uma aplicação específica
+//
+//	@Summary		Retorna uma aplicação
+//	@Tags			applications
+//	@Produce		json
+//	@Param			id	path		string	true	"ID da aplicação"
+//	@Success		200	{object}	models.Application
+//	@Failure		404	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/applications/{id} [get]
+func (c *ApplicationController) getApplication(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	app, err := c.appService.GetApplication(id)
+	if err != nil {
+		if errors.Is(err, models.ErrApplicationNotFound) {
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"error": "Aplicação não encontrada",
+			})
+		}
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Erro ao buscar aplicação: " + err.Error(),
+		})
+	}
+	return ctx.Status(http.StatusOK).JSON(app)
+}
+
+// updateApplication atualiza parcialmente uma aplicação existente
+//
+//	@Summary		Atualiza uma aplicação
+//	@Description	Aceita os mesmos campos do POST via multipart/form-data; apenas os campos enviados são atualizados.
+//	@Tags			applications
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			id		path		string	true	"ID da aplicação"
+//	@Param			name	formData	string	false	"Novo nome"
+//	@Param			port	formData	uint16	false	"Nova porta"
+//	@Param			url		formData	string	false	"Nova URL"
+//	@Param			image	formData	file	false	"Nova imagem"
+//	@Success		200		{object}	models.Application
+//	@Failure		400		{object}	map[string]string
+//	@Failure		404		{object}	map[string]string
+//	@Failure		500		{object}	map[string]string
+//	@Router			/applications/{id} [put]
+func (c *ApplicationController) updateApplication(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+
+	var input models.ApplicationInput
+
+	if name := ctx.FormValue("name"); name != "" {
+		input.Name = &name
+	}
+
+	if portStr := ctx.FormValue("port"); portStr != "" {
+		if portParsed, err := strconv.ParseUint(portStr, 10, 16); err == nil {
+			port := uint16(portParsed)
+			input.Port = &port
+		}
+	}
+
+	if url := ctx.FormValue("url"); url != "" {
+		input.URL = &url
+	}
+
+	fileHeader, _ := ctx.FormFile("image")
+	imageData, err := utils.ParseImageFromFormFile(fileHeader)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": "Erro ao processar imagem: " + err.Error(),
+		})
+	}
+
+	app, err := c.appService.UpdateApplication(id, &input, imageData)
+	if err != nil {
+		if errors.Is(err, models.ErrApplicationNotFound) {
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"error": "Aplicação não encontrada",
+			})
+		}
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Erro ao atualizar aplicação: " + err.Error(),
+		})
+	}
+	return ctx.Status(http.StatusOK).JSON(app)
+}
+
+// deleteApplication remove uma aplicação
+//
+//	@Summary		Remove uma aplicação
+//	@Tags			applications
+//	@Param			id	path	string	true	"ID da aplicação"
+//	@Success		204
+//	@Failure		404	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/applications/{id} [delete]
+func (c *ApplicationController) deleteApplication(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if err := c.appService.DeleteApplication(id); err != nil {
+		if errors.Is(err, models.ErrApplicationNotFound) {
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"error": "Aplicação não encontrada",
+			})
+		}
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Erro ao remover aplicação: " + err.Error(),
+		})
+	}
+	return ctx.SendStatus(http.StatusNoContent)
 }
 
 // listApplications lista todas as aplicações cadastradas

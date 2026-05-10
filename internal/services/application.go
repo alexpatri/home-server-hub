@@ -101,6 +101,54 @@ func (s *ApplicationService) GetApplicationImagePath(id string) string {
 	return s.repository.ImagePath(id)
 }
 
+// GetApplication retorna uma aplicação pelo ID com o status calculado em tempo real.
+func (s *ApplicationService) GetApplication(id string) (*models.Application, error) {
+	app, err := s.repository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	app.Status, _ = s.dockerCli.GetContainerStatus(app.Container)
+	return app, nil
+}
+
+// UpdateApplication aplica atualizações parciais a uma aplicação.
+// Apenas campos não-nil em input são sobrescritos. Se image != nil, substitui
+// a imagem atual; caso contrário a imagem existente é preservada.
+func (s *ApplicationService) UpdateApplication(id string, input *models.ApplicationInput, image *models.Image) (*models.Application, error) {
+	app, err := s.repository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if input.Name != nil {
+		app.Name = *input.Name
+	}
+	if input.Port != nil {
+		app.Port = *input.Port
+	}
+	if input.URL != nil {
+		app.URL = *input.URL
+	}
+	if input.Tags != nil {
+		app.Tags = input.Tags
+	}
+	if image != nil {
+		app.Image = image
+	}
+
+	if err := s.repository.Update(app); err != nil {
+		return nil, err
+	}
+
+	app.Status, _ = s.dockerCli.GetContainerStatus(app.Container)
+	return app, nil
+}
+
+// DeleteApplication remove uma aplicação e seu arquivo de imagem.
+func (s *ApplicationService) DeleteApplication(id string) error {
+	return s.repository.Delete(id)
+}
+
 func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult, error) {
 	applications, err := s.repository.FindAll()
 	if err != nil {

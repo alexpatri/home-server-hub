@@ -64,6 +64,9 @@ func (r *SQLiteApplicationRepository) FindByID(id string) (*models.Application, 
 
 	app, err := scanApplication(row)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrApplicationNotFound
+		}
 		return nil, err
 	}
 	return &app, nil
@@ -80,6 +83,9 @@ func (r *SQLiteApplicationRepository) FindByContainer(containerID string) (*mode
 
 	app, err := scanApplication(row)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrApplicationNotFound
+		}
 		return nil, err
 	}
 	return &app, nil
@@ -135,7 +141,7 @@ func (r *SQLiteApplicationRepository) Update(application *models.Application) er
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err = r.db.ExecContext(ctx, `
+	result, err := r.db.ExecContext(ctx, `
         UPDATE applications SET
             name = ?, tags = ?, container = ?, ip = ?, port = ?, url = ?,
             image_name = ?, image_width = ?, image_height = ?, image_size = ?
@@ -145,15 +151,33 @@ func (r *SQLiteApplicationRepository) Update(application *models.Application) er
 		imageName, imgW, imgH, imgSize,
 		application.ID,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return models.ErrApplicationNotFound
+	}
+	return nil
 }
 
 func (r *SQLiteApplicationRepository) Delete(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM applications WHERE id = ?`, id); err != nil {
+	result, err := r.db.ExecContext(ctx, `DELETE FROM applications WHERE id = ?`, id)
+	if err != nil {
 		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return models.ErrApplicationNotFound
 	}
 	if err := os.Remove(r.ImagePath(id)); err != nil && !os.IsNotExist(err) {
 		return err
