@@ -161,6 +161,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/applications/events": {
+            "get": {
+                "description": "Conexão Server-Sent Events que emite ` + "`" + `data: {\"id\":\"\u003capp-id\u003e\",\"status\":\"running\"|\"stopped\"}` + "`" + ` toda vez que um container associado a uma aplicação muda de estado. Pings de keep-alive (` + "`" + `: ping` + "`" + `) são enviados a cada 25s.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "applications"
+                ],
+                "summary": "Stream SSE de atualizações de status",
+                "responses": {
+                    "200": {
+                        "description": "stream de eventos",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/applications/{id}": {
             "get": {
                 "produces": [
