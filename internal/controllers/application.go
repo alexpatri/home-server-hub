@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -73,6 +74,7 @@ func (c *ApplicationController) discoverApplications(ctx *fiber.Ctx) error {
 //	@Param			name			formData	string	false	"Nome personalizado da aplicação"
 //	@Param			port			formData	uint16	false	"Porta a ser exposta"
 //	@Param			url				formData	string	false	"URL pública da aplicação"
+//	@Param			tags			formData	[]string	false	"Tags da aplicação (múltiplas ocorrências do campo)"	collectionFormat(multi)
 //	@Param			image			formData	file	false	"Imagem opcional para representar a aplicação"
 //	@Success		201				{object}	models.Application
 //	@Failure		400				{object}	map[string]string
@@ -103,6 +105,8 @@ func (c *ApplicationController) createApplication(ctx *fiber.Ctx) error {
 	if url := ctx.FormValue("url"); url != "" {
 		input.URL = &url
 	}
+
+	input.Tags = parseTagsFromForm(ctx)
 
 	// Extrai o arquivo da imagem
 	fileHeader, _ := ctx.FormFile("image")
@@ -181,6 +185,7 @@ func (c *ApplicationController) getApplication(ctx *fiber.Ctx) error {
 //	@Param			name	formData	string	false	"Novo nome"
 //	@Param			port	formData	uint16	false	"Nova porta"
 //	@Param			url		formData	string	false	"Nova URL"
+//	@Param			tags	formData	[]string	false	"Novas tags (substitui as existentes; envie sem valor para limpar)"	collectionFormat(multi)
 //	@Param			image	formData	file	false	"Nova imagem"
 //	@Success		200		{object}	models.Application
 //	@Failure		400		{object}	map[string]string
@@ -206,6 +211,8 @@ func (c *ApplicationController) updateApplication(ctx *fiber.Ctx) error {
 	if url := ctx.FormValue("url"); url != "" {
 		input.URL = &url
 	}
+
+	input.Tags = parseTagsFromForm(ctx)
 
 	fileHeader, _ := ctx.FormFile("image")
 	imageData, err := utils.ParseImageFromFormFile(fileHeader)
@@ -333,4 +340,33 @@ func (c *ApplicationController) listApplications(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(result)
+}
+
+// parseTagsFromForm extrai o campo `tags` de um multipart/form-data, suportando
+// múltiplas ocorrências (`tags=foo&tags=bar`). Retorna nil se o campo não estiver
+// presente; caso contrário, retorna a lista limpa (trim, sem vazios, deduplicada,
+// preservando ordem). Slice vazio explícito sinaliza "limpar todas as tags".
+func parseTagsFromForm(ctx *fiber.Ctx) []string {
+	form, err := ctx.MultipartForm()
+	if err != nil || form == nil {
+		return nil
+	}
+	raw, ok := form.Value["tags"]
+	if !ok {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(raw))
+	cleaned := make([]string, 0, len(raw))
+	for _, t := range raw {
+		t = strings.TrimSpace(t)
+		if t == "" {
+			continue
+		}
+		if _, dup := seen[t]; dup {
+			continue
+		}
+		seen[t] = struct{}{}
+		cleaned = append(cleaned, t)
+	}
+	return cleaned
 }

@@ -85,6 +85,16 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Tags da aplicação (múltiplas ocorrências do campo)",
+                        "name": "tags",
+                        "in": "formData"
+                    },
+                    {
                         "type": "file",
                         "description": "Imagem opcional para representar a aplicação",
                         "name": "image",
@@ -233,6 +243,16 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Nova URL",
                         "name": "url",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Novas tags (substitui as existentes; envie sem valor para limpar)",
+                        "name": "tags",
                         "in": "formData"
                     },
                     {
