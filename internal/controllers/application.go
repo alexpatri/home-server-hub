@@ -34,6 +34,9 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 
 	apps.Get("/:id", c.getApplication)
 	apps.Post("/", c.createApplication)
+	apps.Post("/:id/start", c.startApplication)
+	apps.Post("/:id/stop", c.stopApplication)
+	apps.Post("/:id/restart", c.restartApplication)
 	apps.Put("/:id", c.updateApplication)
 	apps.Delete("/:id", c.deleteApplication)
 }
@@ -221,6 +224,68 @@ func (c *ApplicationController) updateApplication(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao atualizar aplicação: " + err.Error(),
+		})
+	}
+	return ctx.Status(http.StatusOK).JSON(app)
+}
+
+// startApplication inicia o container associado a uma aplicação
+//
+//	@Summary	Inicia o container de uma aplicação
+//	@Tags		applications
+//	@Produce	json
+//	@Param		id	path		string	true	"ID da aplicação"
+//	@Success	200	{object}	models.Application
+//	@Failure	404	{object}	map[string]string
+//	@Failure	500	{object}	map[string]string
+//	@Router		/applications/{id}/start [post]
+func (c *ApplicationController) startApplication(ctx *fiber.Ctx) error {
+	return c.respondToContainerAction(ctx, c.appService.StartApplication, "iniciar")
+}
+
+// stopApplication para o container associado a uma aplicação
+//
+//	@Summary	Para o container de uma aplicação
+//	@Tags		applications
+//	@Produce	json
+//	@Param		id	path		string	true	"ID da aplicação"
+//	@Success	200	{object}	models.Application
+//	@Failure	404	{object}	map[string]string
+//	@Failure	500	{object}	map[string]string
+//	@Router		/applications/{id}/stop [post]
+func (c *ApplicationController) stopApplication(ctx *fiber.Ctx) error {
+	return c.respondToContainerAction(ctx, c.appService.StopApplication, "parar")
+}
+
+// restartApplication reinicia o container associado a uma aplicação
+//
+//	@Summary	Reinicia o container de uma aplicação
+//	@Tags		applications
+//	@Produce	json
+//	@Param		id	path		string	true	"ID da aplicação"
+//	@Success	200	{object}	models.Application
+//	@Failure	404	{object}	map[string]string
+//	@Failure	500	{object}	map[string]string
+//	@Router		/applications/{id}/restart [post]
+func (c *ApplicationController) restartApplication(ctx *fiber.Ctx) error {
+	return c.respondToContainerAction(ctx, c.appService.RestartApplication, "reiniciar")
+}
+
+func (c *ApplicationController) respondToContainerAction(
+	ctx *fiber.Ctx,
+	action func(string) (*models.Application, error),
+	verb string,
+) error {
+	id := ctx.Params("id")
+	app, err := action(id)
+	if err != nil {
+		if errors.Is(err, models.ErrApplicationNotFound) {
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"error": "Aplicação não encontrada",
+			})
+		}
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Erro ao " + verb + " aplicação: " + err.Error(),
 		})
 	}
 	return ctx.Status(http.StatusOK).JSON(app)
