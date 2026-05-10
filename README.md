@@ -56,10 +56,15 @@ O conteúdo binário das imagens é gravado em `<IMAGES_DIR>/<id>` e servido via
 | PUT    | `/applications/{id}`            | Atualiza parcialmente uma aplicação                  |
 | DELETE | `/applications/{id}`            | Remove uma aplicação                                 |
 | GET    | `/applications/{id}/image`      | Retorna o arquivo de imagem da aplicação             |
+| POST   | `/applications/{id}/start`      | Inicia o container associado                         |
+| POST   | `/applications/{id}/stop`       | Para o container associado (timeout de 10s)          |
+| POST   | `/applications/{id}/restart`    | Reinicia o container associado                       |
 
 `PUT /applications/{id}` aceita `multipart/form-data` com os mesmos campos do `POST` (`name`, `port`, `url`, `image`); apenas os campos enviados são atualizados, os demais permanecem inalterados.
 
 `DELETE /applications/{id}` responde `204 No Content` em sucesso e `404` se o ID não existir.
+
+As três ações de container respondem `200 OK` com a aplicação atualizada (incluindo o novo `status`), `404` se o ID não existir, ou `500` com a mensagem do Docker em caso de falha (ex.: container já removido).
 
 Todas as rotas estão sob o prefixo `/api/v1`.
 
