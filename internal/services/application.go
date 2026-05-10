@@ -102,18 +102,18 @@ func (s *ApplicationService) GetApplicationImagePath(id string) string {
 }
 
 func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult, error) {
-	applicatrions, err := s.repository.FindAll()
+	applications, err := s.repository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, app := range applicatrions {
-		app.Status, _ = s.dockerCli.GetContainerStatus(app.Container)
+	for i := range applications {
+		applications[i].Status, _ = s.dockerCli.GetContainerStatus(applications[i].Container)
 	}
 
 	return &models.ListApplicationsResult{
-		Applications: applicatrions,
-		Total:        len(applicatrions),
+		Applications: applications,
+		Total:        len(applications),
 	}, nil
 }
 
