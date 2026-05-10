@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"strings"
 
 	"home-server-hub/internal/docker"
@@ -147,6 +148,36 @@ func (s *ApplicationService) UpdateApplication(id string, input *models.Applicat
 // DeleteApplication remove uma aplicação e seu arquivo de imagem.
 func (s *ApplicationService) DeleteApplication(id string) error {
 	return s.repository.Delete(id)
+}
+
+// StartApplication inicia o container associado a uma aplicação.
+func (s *ApplicationService) StartApplication(id string) (*models.Application, error) {
+	return s.applyContainerAction(id, s.dockerCli.StartContainer)
+}
+
+// StopApplication para o container associado a uma aplicação.
+func (s *ApplicationService) StopApplication(id string) (*models.Application, error) {
+	return s.applyContainerAction(id, s.dockerCli.StopContainer)
+}
+
+// RestartApplication reinicia o container associado a uma aplicação.
+func (s *ApplicationService) RestartApplication(id string) (*models.Application, error) {
+	return s.applyContainerAction(id, s.dockerCli.RestartContainer)
+}
+
+func (s *ApplicationService) applyContainerAction(id string, action func(string) error) (*models.Application, error) {
+	app, err := s.repository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if app.Container == "" {
+		return nil, errors.New("aplicação não possui container associado")
+	}
+	if err := action(app.Container); err != nil {
+		return nil, err
+	}
+	app.Status, _ = s.dockerCli.GetContainerStatus(app.Container)
+	return app, nil
 }
 
 func (s *ApplicationService) ListApplications() (*models.ListApplicationsResult, error) {

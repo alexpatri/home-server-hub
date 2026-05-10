@@ -146,6 +146,30 @@ func (c *Client) ListContainers() ([]ContainerInfo, error) {
 	return containers, nil
 }
 
+// StartContainer inicia um container parado.
+func (c *Client) StartContainer(containerID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	return c.client.ContainerStart(ctx, containerID, container.StartOptions{})
+}
+
+// StopContainer para um container rodando, aguardando até stopTimeout segundos
+// pelo desligamento gracioso antes de enviar SIGKILL.
+func (c *Client) StopContainer(containerID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	timeout := 10
+	return c.client.ContainerStop(ctx, containerID, container.StopOptions{Timeout: &timeout})
+}
+
+// RestartContainer reinicia um container.
+func (c *Client) RestartContainer(containerID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	timeout := 10
+	return c.client.ContainerRestart(ctx, containerID, container.StopOptions{Timeout: &timeout})
+}
+
 // GetContainerStatus obtém o status atual de um container
 func (c *Client) GetContainerStatus(containerID string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
