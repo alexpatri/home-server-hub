@@ -1,0 +1,25 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+  settings:
+    errcheck:
+      exclude-functions:
+        - (*database/sql.Rows).Close
+        - (*database/sql.Row).Close
+        - (*database/sql.Tx).Rollback
+        - (*database/sql.DB).Close
+        - (*os.File).Close
+        - (mime/multipart.File).Close
+        - (*home-server-hub/internal/docker.Client).Close
+
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - home-server-hub
