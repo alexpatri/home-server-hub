@@ -16,11 +16,11 @@ import (
 	"home-server-hub/internal/docker"
 )
 
-//	@title			Home Server Hub API
-//	@version		0.1
-//	@description	Documentação da API Home Server Hub
-//	@host			localhost:8000
-//	@BasePath		/api/v1
+// @title			Home Server Hub API
+// @version		0.1
+// @description	Documentação da API Home Server Hub
+// @host			localhost:8000
+// @BasePath		/api/v1
 func main() {
 	// Flag para carregar .env
 	useDotEnv := flag.Bool("dotenv", false, "Carregar variáveis do arquivo .env")

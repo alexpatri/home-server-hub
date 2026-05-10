@@ -1,4 +1,4 @@
-.PHONY: build run clean help
+.PHONY: build run clean help deps test lint install-tools dev dependencies
 
 # Variáveis
 APP_NAME=api
@@ -25,13 +25,20 @@ run: ## Run the application
 clean: ## Clean build artifacts
 	rm -rf $(BIN_DIR)
 
+test: ## Run tests
+	go test ./...
+
 lint: ## Run linter
-	@hash golangci-lint 2>/dev/null || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint run
+	@hash golangci-lint 2>/dev/null || go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+	golangci-lint run ./...
 
 install-tools: ## Install development tools
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	go install github.com/cosmtrek/air@latest
+
+dependencies: ## Install dev dependencies and git hooks
+	@bash scripts/install-deps.sh
+	@bash scripts/setup-hooks.sh
 
 dev: ## Run with hot reload (requires air)
 	@hash air 2>/dev/null || go install github.com/cosmtrek/air@latest

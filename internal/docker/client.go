@@ -2,7 +2,7 @@ package docker
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -66,11 +66,14 @@ func (c *Client) GetContainer(containerID string) (*ContainerInfo, error) {
 	var ports []Port
 	for port, bindings := range inspected.NetworkSettings.Ports {
 		for _, binding := range bindings {
-			hostPort := uint16(0)
-			fmt.Sscanf(binding.HostPort, "%d", &hostPort)
+			parsed, err := strconv.ParseUint(binding.HostPort, 10, 16)
+			if err != nil {
+				continue
+			}
+
 			ports = append(ports, Port{
 				HostIP:        binding.HostIP,
-				HostPort:      hostPort,
+				HostPort:      uint16(parsed),
 				ContainerPort: uint16(port.Int()),
 				Protocol:      port.Proto(),
 			})
