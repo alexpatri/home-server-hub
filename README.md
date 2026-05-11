@@ -183,10 +183,10 @@ sqlite3 ./data/home_server_hub.db ".backup ./backup.db"
 
 ## Roadmap Futuro
 
-- Monitoramento de recursos do servidor (CPU, memória, disco)
-- Gerenciamento de containers (iniciar, parar, reiniciar)
-- Visualização de logs
-- Notificações de status
+- Streaming de logs dos containers via SSE/WebSocket
+- Métricas por container (uso de CPU e memória)
+- Monitoramento de recursos do host (CPU, memória, disco)
+- Cobertura de testes automatizados
 
 ## Contribuição
 
