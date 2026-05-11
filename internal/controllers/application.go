@@ -1,13 +1,18 @@
 package controllers
 
 import (
+	"bufio"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 
+	"home-server-hub/internal/events"
 	"home-server-hub/internal/models"
 	"home-server-hub/internal/services"
 	"home-server-hub/internal/utils"
@@ -15,13 +20,15 @@ import (
 
 // ApplicationController gerencia as rotas relacionadas a aplicações
 type ApplicationController struct {
-	appService *services.ApplicationService
+	appService  *services.ApplicationService
+	broadcaster *events.Broadcaster
 }
 
 // NewApplicationController cria um novo controller de aplicações
-func NewApplicationController(appService *services.ApplicationService) *ApplicationController {
+func NewApplicationController(appService *services.ApplicationService, broadcaster *events.Broadcaster) *ApplicationController {
 	return &ApplicationController{
-		appService: appService,
+		appService:  appService,
+		broadcaster: broadcaster,
 	}
 }
 
@@ -30,6 +37,7 @@ func (c *ApplicationController) RegisterRoutes(router fiber.Router) {
 	apps := router.Group("/applications")
 
 	apps.Get("/discover", c.discoverApplications)
+	apps.Get("/events", c.streamEvents)
 	apps.Get("/", c.listApplications)
 	apps.Get("/:id/image", c.getApplicationImage)
 
@@ -340,6 +348,53 @@ func (c *ApplicationController) listApplications(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(result)
+}
+
+// streamEvents abre uma conexão SSE que recebe atualizações de status em tempo real.
+//
+//	@Summary		Stream SSE de atualizações de status
+//	@Description	Conexão Server-Sent Events que emite `data: {"id":"<app-id>","status":"running"|"stopped"}` toda vez que um container associado a uma aplicação muda de estado. Pings de keep-alive (`: ping`) são enviados a cada 25s.
+//	@Tags			applications
+//	@Produce		text/event-stream
+//	@Success		200	{string}	string	"stream de eventos"
+//	@Router			/applications/events [get]
+func (c *ApplicationController) streamEvents(ctx *fiber.Ctx) error {
+	ctx.Set("Content-Type", "text/event-stream")
+	ctx.Set("Cache-Control", "no-cache")
+	ctx.Set("Connection", "keep-alive")
+
+	sub := c.broadcaster.Subscribe()
+	ctx.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
+		defer sub.Close()
+		ping := time.NewTicker(25 * time.Second)
+		defer ping.Stop()
+		for {
+			select {
+			case ev, ok := <-sub.Channel():
+				if !ok {
+					return
+				}
+				payload, err := json.Marshal(ev)
+				if err != nil {
+					return
+				}
+				if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
+					return
+				}
+				if err := w.Flush(); err != nil {
+					return
+				}
+			case <-ping.C:
+				if _, err := fmt.Fprint(w, ": ping\n\n"); err != nil {
+					return
+				}
+				if err := w.Flush(); err != nil {
+					return
+				}
+			}
+		}
+	})
+	return nil
 }
 
 // parseTagsFromForm extrai o campo `tags` de um multipart/form-data, suportando

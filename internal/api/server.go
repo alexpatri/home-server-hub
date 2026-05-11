@@ -21,8 +21,11 @@ type Server struct {
 // NewServer cria uma nova instância do servidor
 func NewServer(config *config.Config) *Server {
 	app := fiber.New(fiber.Config{
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		ReadTimeout: 30 * time.Second,
+		// WriteTimeout: 0 (sem deadline absoluto) é necessário para o endpoint
+		// SSE /applications/events permanecer aberto indefinidamente. Como o
+		// hub roda em LAN, slowloris não é uma preocupação prática.
+		WriteTimeout: 0,
 		IdleTimeout:  120 * time.Second,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError

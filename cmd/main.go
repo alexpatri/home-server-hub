@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -14,6 +15,8 @@ import (
 	"home-server-hub/internal/config"
 	"home-server-hub/internal/database"
 	"home-server-hub/internal/docker"
+	"home-server-hub/internal/events"
+	"home-server-hub/internal/repository"
 )
 
 // @title			Home Server Hub API
@@ -59,11 +62,20 @@ func main() {
 	}
 	defer dockerCli.Close()
 
+	// Repositório (compartilhado entre rotas e broadcaster)
+	repo := repository.NewSQLiteApplicationRepository(db, cfg.Database.ImagesDir)
+
+	// Broadcaster de eventos de status — consome Docker Events e faz fan-out
+	broadcaster := events.NewBroadcaster(dockerCli, repo)
+	broadcasterCtx, cancelBroadcaster := context.WithCancel(context.Background())
+	defer cancelBroadcaster()
+	go broadcaster.Run(broadcasterCtx)
+
 	// Criar e iniciar servidor
 	server := api.NewServer(cfg)
 
 	// Configurar rotas
-	api.SetupRoutes(server.GetApp(), db, cfg.Database.ImagesDir, dockerCli)
+	api.SetupRoutes(server.GetApp(), repo, dockerCli, broadcaster)
 
 	// Canal para receber sinal de interrupção
 	quit := make(chan os.Signal, 1)

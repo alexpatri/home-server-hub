@@ -404,4 +404,19 @@ paths:
       summary: Descobre aplicações Docker rodando no servidor
       tags:
       - applications
+  /applications/events:
+    get:
+      description: 'Conexão Server-Sent Events que emite `data: {"id":"<app-id>","status":"running"|"stopped"}`
+        toda vez que um container associado a uma aplicação muda de estado. Pings
+        de keep-alive (`: ping`) são enviados a cada 25s.'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: stream de eventos
+          schema:
+            type: string
+      summary: Stream SSE de atualizações de status
+      tags:
+      - applications
 swagger: "2.0"

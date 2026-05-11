@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,23 +9,22 @@ import (
 	_ "home-server-hub/docs"
 	"home-server-hub/internal/controllers"
 	"home-server-hub/internal/docker"
+	"home-server-hub/internal/events"
 	"home-server-hub/internal/repository"
 	"home-server-hub/internal/services"
 )
 
 // setupApplicationRoutes configura as rotas relacionadas a aplicações
-func setupApplicationRoutes(app *fiber.App, repo *repository.SQLiteApplicationRepository, dockerCli *docker.Client) {
+func setupApplicationRoutes(app *fiber.App, repo *repository.SQLiteApplicationRepository, dockerCli *docker.Client, broadcaster *events.Broadcaster) {
 	applicationService := services.NewApplicationService(repo, dockerCli)
-	applicationController := controllers.NewApplicationController(applicationService)
+	applicationController := controllers.NewApplicationController(applicationService, broadcaster)
 	apiGroup := app.Group("/api/v1")
 	applicationController.RegisterRoutes(apiGroup)
 }
 
 // SetupRoutes configura todas as rotas da API
-func SetupRoutes(app *fiber.App, db *sql.DB, imagesDir string, dockerCli *docker.Client) {
-	applicationRepo := repository.NewSQLiteApplicationRepository(db, imagesDir)
-
-	setupApplicationRoutes(app, applicationRepo, dockerCli)
+func SetupRoutes(app *fiber.App, repo *repository.SQLiteApplicationRepository, dockerCli *docker.Client, broadcaster *events.Broadcaster) {
+	setupApplicationRoutes(app, repo, dockerCli, broadcaster)
 
 	// Rota de saúde
 	app.Get("/health", func(c *fiber.Ctx) error {
