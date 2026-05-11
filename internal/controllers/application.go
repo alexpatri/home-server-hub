@@ -363,11 +363,6 @@ func (c *ApplicationController) streamEvents(ctx *fiber.Ctx) error {
 	ctx.Set("Cache-Control", "no-cache")
 	ctx.Set("Connection", "keep-alive")
 
-	// SSE precisa de conexão sem deadline absoluto — sobrescreve o WriteTimeout global.
-	if conn := ctx.Context().Conn(); conn != nil {
-		_ = conn.SetWriteDeadline(time.Time{})
-	}
-
 	sub := c.broadcaster.Subscribe()
 	ctx.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
 		defer sub.Close()
