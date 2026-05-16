@@ -14,7 +14,7 @@ linters:
         - (*database/sql.DB).Close
         - (*os.File).Close
         - (mime/multipart.File).Close
-        - (*home-server-hub/internal/docker.Client).Close
+        - (*home-server-hub/internal/utils/docker.Client).Close
 
 formatters:
   enable:

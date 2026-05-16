@@ -7,17 +7,17 @@ import (
 	"github.com/gofiber/swagger"
 
 	_ "home-server-hub/docs"
-	"home-server-hub/internal/controllers"
-	"home-server-hub/internal/docker"
 	"home-server-hub/internal/events"
+	"home-server-hub/internal/handlers"
 	"home-server-hub/internal/repository"
 	"home-server-hub/internal/services"
+	"home-server-hub/internal/utils/docker"
 )
 
 // setupApplicationRoutes configura as rotas relacionadas a aplicações
 func setupApplicationRoutes(app *fiber.App, repo *repository.SQLiteApplicationRepository, dockerCli *docker.Client, broadcaster *events.Broadcaster) {
 	applicationService := services.NewApplicationService(repo, dockerCli)
-	applicationController := controllers.NewApplicationController(applicationService, broadcaster)
+	applicationController := handlers.NewApplicationController(applicationService, broadcaster)
 	apiGroup := app.Group("/api/v1")
 	applicationController.RegisterRoutes(apiGroup)
 }

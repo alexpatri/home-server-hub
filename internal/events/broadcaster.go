@@ -12,8 +12,8 @@ import (
 
 	dockerevents "github.com/docker/docker/api/types/events"
 
-	"home-server-hub/internal/docker"
 	"home-server-hub/internal/models"
+	"home-server-hub/internal/utils/docker"
 )
 
 const (

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 
-	"home-server-hub/internal/docker"
 	"home-server-hub/internal/models"
+	"home-server-hub/internal/utils/docker"
 )
 
 // ApplicationService encapsula a lógica de negócio relacionada a aplicações

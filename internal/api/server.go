@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
-	"home-server-hub/internal/config"
+	"home-server-hub/internal/utils/config"
 )
 
 // Server encapsula o servidor HTTP Fiber

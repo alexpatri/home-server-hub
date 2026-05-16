@@ -10,7 +10,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"home-server-hub/internal/config"
+	"home-server-hub/internal/utils/config"
 )
 
 const schema = `

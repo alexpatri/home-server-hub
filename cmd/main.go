@@ -12,11 +12,11 @@ import (
 	"github.com/joho/godotenv"
 
 	"home-server-hub/internal/api"
-	"home-server-hub/internal/config"
 	"home-server-hub/internal/database"
-	"home-server-hub/internal/docker"
 	"home-server-hub/internal/events"
 	"home-server-hub/internal/repository"
+	"home-server-hub/internal/utils/config"
+	"home-server-hub/internal/utils/docker"
 )
 
 // @title			Home Server Hub API
