@@ -145,17 +145,21 @@ O `docker-compose.yml` monta `./data` em `/app/data`, então banco e imagens per
 
 ```
 home-server-hub/
-├── cmd/main.go             # Entry point
+├── cmd/server/main.go      # Entry point do servidor
+├── cmd/tui/main.go          # TUI (Bubble Tea) - experimental
 ├── internal/
 │   ├── api/                # Servidor Fiber e rotas
-│   ├── config/             # Carregamento de configuração via env
-│   ├── controllers/        # Handlers HTTP
 │   ├── database/           # Conexão e bootstrap do SQLite
-│   ├── docker/             # Cliente Docker (descoberta de containers)
+│   ├── events/             # Broadcaster de eventos SSE
+│   ├── handlers/           # Handlers HTTP
 │   ├── models/             # Tipos de domínio + interface do repositório
 │   ├── repository/         # Implementação SQLite
 │   ├── services/           # Regra de negócio
-│   └── utils/              # Helpers (parse de imagem, network)
+│   └── utils/              # Helpers
+│       ├── config/         # Carregamento de configuração via env
+│       ├── docker/         # Cliente Docker (descoberta de containers)
+│       ├── image.go        # Parse de imagem
+│       └── network/        # Utilitários de rede
 ├── docker/Dockerfile       # Build multi-stage (Go puro, sem CGO)
 ├── docker-compose.yml
 └── docs/                   # Swagger gerado
@@ -164,13 +168,13 @@ home-server-hub/
 ### Executando localmente
 
 ```bash
-go run ./cmd/main.go --dotenv   # carrega .env se presente
+go run ./cmd/server/main.go --dotenv   # carrega .env se presente
 ```
 
 Para regerar a documentação Swagger após mudanças nas anotações:
 
 ```bash
-swag init -g cmd/main.go
+swag init -g cmd/server/main.go
 ```
 
 ### Backup

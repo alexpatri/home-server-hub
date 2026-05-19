@@ -3,7 +3,7 @@
 # Variáveis
 APP_NAME=api
 BIN_DIR=bin
-MAIN_PATH=./cmd/
+MAIN_PATH=./cmd/server/
 
 # Go build flags
 GO_BUILD_FLAGS=-ldflags="-s -w"

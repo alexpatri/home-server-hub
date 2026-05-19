@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY . .
 # Compila o binário (Go puro, sem CGO)
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/main ./cmd/main.go
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/main ./cmd/server/main.go
 
 # Etapa 2: imagem final
 FROM alpine:3.20
